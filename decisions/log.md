@@ -34,6 +34,19 @@ Why this matters: a single sentence of *why* now is worth an hour of archaeology
 - Reversibility: easy. Prior file versions are in git.
 - Follow-up: Operator reviews populated files. Then Phase 2 code skills. Q4/Q5/Q6 gaps marked in `connections.md` under "Pending confirmation" — fill when convenient.
 
+## 2026-06-01 — /scaffold-next dry-run found 5 spec gaps
+
+- Decision: Ran `/scaffold-next` against throwaway `~/dev/ai-os`. Skill produced a working scaffold (tsc, lint, build all green) but only after fixing 5 issues:
+  1. **Prisma 7 broke datasource.url + PrismaClient import.** Pinned to `@prisma/client@^6` + `prisma@^6`. Skill updated to require ^6 pin until a separate Prisma-7-aware path lands.
+  2. **`create-next-app` now generates `AGENTS.md` + `CLAUDE.md`.** Skill updated to acknowledge this and document the `--no-agents-md` opt-out.
+  3. **`create-next-app` already runs `git init` + initial commit.** Skill said to `git init` again — would no-op or error. Updated to add a follow-up commit instead.
+  4. **`.gitignore` ignores `.env*` so `.env.example` is invisible.** Skill updated to add `!.env.example` exception.
+  5. **No verification step was specified.** Skill updated to require `npx prisma generate && npx tsc --noEmit && npm run lint && npm run build` to all pass before declaring success.
+- Why: The whole point of the throwaway test was to surface gaps. Five real gaps, all fixed in the spec. Future runs should produce a green scaffold first try.
+- Alternatives considered: Adopt Prisma 7 patterns immediately in the skill (rejected — Prisma 7 needs `prisma.config.ts` + adapter-based client, which warrants its own skill iteration). Delete the throwaway after the test (rejected — leave `~/dev/ai-os` in place as evidence; operator can `rm -rf` when ready).
+- Reversibility: easy. Skill is a markdown file.
+- Follow-up: Operator can run `/scaffold-next` again any time; should be green first try now. When Prisma 7 adoption is desired, plan a separate skill update.
+
 ## 2026-06-01 — Top weekly pain identified
 
 - Decision: Treat "scaffolding new Next.js apps from scratch every time" as Phase 2's primary target. Build `/scaffold-next` skill this session.

@@ -21,15 +21,24 @@ You are generating a fresh Next.js project for Anson. The point is to skip the 3
 Generate the project by running `npx create-next-app@latest <name>` with these flags, then layer Anson's conventions on top:
 
 ```
-npx create-next-app@latest <name> \
+npx --yes create-next-app@latest <name> \
   --typescript \
   --tailwind \
   --app \
   --src-dir \
   --import-alias "@/*" \
   --eslint \
+  --use-npm \
   --no-turbopack
 ```
+
+Notes on what `create-next-app` does for you (current as of Next.js 16.x — re-check on a new major):
+
+- **Initializes git and makes an initial commit** ("Initial commit from Create Next App"). Do NOT run `git init` again — just `git add -A` your layered conventions and create a second commit.
+- **Generates a one-line `AGENTS.md`** with a "this is not the Next.js you know" warning, plus a `CLAUDE.md` that just references `@AGENTS.md`. Leave both in place unless the operator asks otherwise. Pass `--no-agents-md` if you want them omitted.
+- Uses **Tailwind v4** (no `tailwind.config.ts/js` file — config is CSS-based, lives in `src/app/globals.css`).
+- Adds Geist + Geist_Mono fonts and a basic dark-mode-friendly `layout.tsx`.
+- `.gitignore` includes `.env*` — this means `.env.example` would also be ignored. **Add `!.env.example` to `.gitignore`** when you create the example file, otherwise it won't be tracked.
 
 After scaffolding, add:
 
@@ -58,12 +67,22 @@ Add the chosen auth pattern:
 Beyond `create-next-app` defaults, install:
 - `zod` (always)
 - `clsx`, `tailwind-merge` (for the `cn` helper)
-- `@prisma/client`, `prisma` (always — even if Anson says "no DB yet", scaffolding is cheaper to remove than retrofit)
+- **`@prisma/client@^6` and `prisma@^6`** as devDep (pin to 6 — see Prisma version note below)
 - Auth-package if applicable
 
-### Git + GitHub
+#### Prisma version note (important)
 
-- Initialize git, make an initial commit: `chore: scaffold from /scaffold-next`.
+Prisma 7 (released late 2025) is a breaking change:
+- `datasource.url` is no longer allowed in `schema.prisma`. Connection URLs must live in a `prisma.config.ts` file.
+- `PrismaClient` is no longer instantiated with a `datasourceUrl` constructor option — it needs an adapter (`@prisma/adapter-better-sqlite3`, `@prisma/adapter-pg`, etc.) passed to the constructor.
+- The simple "schema + client" pattern this skill produces is incompatible with Prisma 7 defaults.
+
+**Pin to `^6`** for new scaffolds (`npm install @prisma/client@^6 prisma@^6`) until this skill is updated with a Prisma 7 code path. When Anson is ready to adopt Prisma 7, the migration is well-documented at https://pris.ly/d/prisma7-client-config but it changes the shape of `prisma/schema.prisma` and `src/lib/prisma.ts` enough that it should be its own skill update.
+
+### Git
+
+- `create-next-app` has already initialized git and made the first commit (`Initial commit from Create Next App`). **Do not run `git init` again.**
+- After layering conventions and installing extra deps, run `git add -A && git commit -m "chore: scaffold from /scaffold-next"`.
 - If Anson asked for a GitHub repo: `gh repo create <name> --private --source=. --push`.
 - Otherwise, leave local-only and remind Anson the command to push later.
 
@@ -91,6 +110,19 @@ Not configured. When ready: `flyctl launch` (Fly.io) or `vercel` (Vercel).
 ## Repo
 <github URL if created, else "local-only — run `gh repo create` when ready">
 ```
+
+## Verification before reporting done
+
+After committing, run these and surface any failure to Anson:
+
+```sh
+npx prisma generate   # confirms schema parses + client builds
+npx tsc --noEmit      # type-check the layered conventions
+npm run lint          # eslint clean
+npm run build         # next build smoke test (catches type errors in build pipeline too)
+```
+
+All four must pass before reporting success. If any fail, stop and surface the error verbatim — don't patch around it.
 
 ## Rules
 

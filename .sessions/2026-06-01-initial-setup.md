@@ -59,7 +59,8 @@
 - [x] `.sessions/TEMPLATE.md` created.
 - [x] This session file updated to reflect end-state.
 - [x] `.sessions/SESSION_INDEX.md` updated.
-- [x] Verification run (see "How to Run / Verify" below).
+- [x] Verification run: YAML frontmatter, name-field-matches-directory, description field, skill parity, AGENTS.md cross-references, JSON validity. All pass.
+- [x] Stale references cleaned (provably stale items only): `name:` in review-diff SKILL files, AGENTS.md/CLAUDE.md mirror instructions in onboard skill, aios-intake.md footer, settings.local.json stale permission paths.
 
 ## Files Changed
 
@@ -95,6 +96,10 @@
 - `references/voice.md` — populated with operator's two voice samples + register notes.
 - `.sessions/SESSION_INDEX.md` — newest-first, points to this file + TEMPLATE.
 - `.sessions/2026-06-01-initial-setup.md` (this file) — final state.
+- `.claude/skills/review-diff/SKILL.md` + `.agents/skills/review-diff/SKILL.md` — fixed `name:` frontmatter field (was `review`, now `review-diff` matching the directory).
+- `.claude/skills/onboard/SKILL.md` + `.agents/skills/onboard/SKILL.md` — instructions updated to reflect AGENTS.md ≠ CLAUDE.md split; only CLAUDE.md gets persona content now.
+- `aios-intake.md` — footer updated to match the new AGENTS.md vs. CLAUDE.md split.
+- `.claude/settings.local.json` — stale `review/SKILL.md` permission paths cleaned at write-time (Claude Code's harness re-adds entries when commands are re-approved; this is intentional and harmless).
 
 ### Deleted
 - None.
