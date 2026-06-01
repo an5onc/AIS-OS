@@ -45,10 +45,11 @@ Read in this order when joining the project cold:
 | [aios-intake.md](aios-intake.md) | Raw Q1-Q7 intake | When persona/context seems wrong |
 | [EXPANSIONS.md](EXPANSIONS.md) | Planned growth menu (tiered) | When deciding what to build next |
 
-Three folders without single-file sources:
+Folders without single-file sources:
 
 - [`.claude/skills/`](.claude/skills/) — Claude Code skills. Each is `<name>/SKILL.md` with YAML frontmatter (`name`, `description`).
 - [`.agents/skills/`](.agents/skills/) — Codex mirrors. Must stay in sync with `.claude/skills/`.
+- [`.claude/hooks/`](.claude/hooks/) — project-local hook scripts, wired in [`.claude/settings.json`](.claude/settings.json). See [`.claude/hooks/README.md`](.claude/hooks/README.md).
 - [`archives/`](archives/) — long-term storage. Move files here instead of deleting.
 
 ## Required environment variables
@@ -107,6 +108,7 @@ These are the conventions earlier agents have either established or learned the 
 9. **Trademark attribution.** The 3Ms framework is trademarked to Nate Herk. Preserve the attribution in [references/3ms-framework.md](references/3ms-framework.md). If swapping in canonical wording, keep the citation line.
 10. **`{{placeholders}}` mean "operator action required."** Don't fabricate values. If `aios-intake.md` has `Pending` markers in answers, surface them in summary; don't invent answers.
 11. **`/dev/CLAUDE.md` is the parent.** This repo lives inside `/Users/ansoncordeiro/dev/`. That directory has its own [CLAUDE.md](../CLAUDE.md) with session save/close protocols ("save session", "let's close today"). When the operator uses those phrases, the parent rules apply.
+12. **Hooks are active in this repo.** [`.claude/settings.json`](.claude/settings.json) wires three project-local hooks (destructive-Bash guard, SKILL.md integrity check, session-continuity injection). If a Bash command is blocked unexpectedly, it likely tripped the text-based `bash_guard.py` — run it manually or see [`.claude/hooks/README.md`](.claude/hooks/README.md). Don't disable hooks to work around a block; fix the command or run it yourself.
 
 ## End-of-session handoff protocol
 

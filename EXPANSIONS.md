@@ -25,12 +25,14 @@ Highest-leverage additions for SWE pain.
 
 ## Tier 3 — hooks (behavior, not prompts)
 
-Hooks change what the harness *does*, not just what the model *says*.
+Hooks change what the harness *does*, not just what the model *says*. Built ones live in `.claude/hooks/` and are wired in `.claude/settings.json` — see `.claude/hooks/README.md`.
 
-- [ ] `PostToolUse` on `Edit`/`Write` → run typecheck/lint, surface failures.
-- [ ] `PreToolUse` on `Bash` → block destructive commands (`rm -rf`, `git reset --hard`, force push) without explicit confirm.
-- [ ] `Stop` → if anything material was decided, append a one-line entry to `decisions/log.md`.
-- [ ] `UserPromptSubmit` → inject the current session's TODO list from `.sessions/`.
+- [x] `PreToolUse` on `Bash` → block destructive commands (`rm -rf`, `git reset --hard`, force push, `git clean -f`, etc.). *(Shipped 2026-06-01 as `bash_guard.py`.)*
+- [x] `PostToolUse` on `Edit`/`Write` → validate `SKILL.md` frontmatter + flag `.claude`↔`.agents` mirror drift. *(Shipped 2026-06-01 as `skill_check.py`. Replaces the generic typecheck idea, which doesn't fit a Markdown-only repo.)*
+- [x] `SessionStart` → inject latest session Status + TODO for warm starts. *(Shipped 2026-06-01 as `session_context.py`. Chosen over `UserPromptSubmit` to avoid per-prompt token cost.)*
+- [ ] ~~`PostToolUse` typecheck/lint~~ → not applicable here (Markdown repo). Belongs in Anson's actual TS code projects; drop a per-project hook into each.
+- [ ] ~~`Stop` → auto-append decision to `decisions/log.md`~~ → deliberately skipped: a Stop hook can't reliably detect or summarize a "material decision," and wrong entries in an append-only log are worse than none. Keep decision logging manual.
+- [ ] Promote `bash_guard.py` to `~/.claude/settings.json` (global) once proven, so it protects every repo, not just AIS-OS.
 
 ## Tier 4 — MCP integrations
 

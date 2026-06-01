@@ -1,4 +1,4 @@
-# Session: 2026-06-01 — Initial setup, onboarding, and handoff system
+# Session: 2026-06-01 — Setup, onboarding, handoff system, scaffold test, Phase 3 hooks
 
 ## Status: IN PROGRESS
 
@@ -14,6 +14,10 @@
 - [x] Option 1: fill `aios-intake.md` from intake + resume, then run `/onboard` to personalize files.
 - [x] Option 2: build Phase 2 code skills (`/review-diff`, `/pr-desc`, `/commit-msg`, `/scaffold-next`).
 - [x] Final cleanup: rebuild `AGENTS.md` as a project handoff, separate persona into `CLAUDE.md`, add a session template, run verification.
+- [x] Commit + push v0.1 / v0.2 to GitHub (`github.com/an5onc/AIS-OS`).
+- [x] Dry-run `/scaffold-next` against a throwaway project; fix gaps the test surfaced.
+- [x] Phase 3: ship project-local hooks (Bash guard, skill integrity, session continuity).
+- [x] Add repo-level `.gitignore` so `settings.local.json` is ignored across machines.
 
 ## Decisions
 
@@ -47,6 +51,16 @@
   - Alternatives considered: Keep both files as mirrors and put project info in a separate `PROJECT.md` (rejected — convention is `AGENTS.md` at root for project handoff). Move persona to `PERSONA.md` (rejected — `CLAUDE.md` already exists and is the Claude Code convention).
   - Reversibility: medium (would require re-merging if reverted).
 
+- Decision: Pin Prisma to `^6` in `/scaffold-next`; ship 3 of 4 Phase 3 hooks (skip typecheck + Stop-log).
+  - Rationale: Scaffold dry-run proved Prisma 7 breaks the simple schema/client pattern. Hooks: typecheck doesn't fit a Markdown repo; a Stop hook can't reliably summarize a decision.
+  - Alternatives considered: Adopt Prisma 7 immediately (deferred to its own skill update); build all 4 hooks (rejected for the two reasons above).
+  - Reversibility: easy (markdown + self-contained scripts).
+  - Full detail in `decisions/log.md` entries dated 2026-06-01.
+
+- Decision: Add a repo-level `.gitignore` for `settings.local.json`.
+  - Rationale: It was only ignored by the operator's global `~/.config/git/ignore`, which doesn't travel with clones. A repo `.gitignore` makes it durable.
+  - Reversibility: easy.
+
 ## Work Completed
 
 - [x] Phase 1 scaffold: created `aios-intake.md`, `connections.md`, `decisions/log.md`, `EXPANSIONS.md`, `archives/.gitkeep`, `references/3ms-framework.md`, `.claude/skills/{onboard,audit,level-up}/SKILL.md`, `.agents/skills/{onboard,audit,level-up}/SKILL.md`, `CLAUDE.md` (mirror of `AGENTS.md`).
@@ -61,6 +75,10 @@
 - [x] `.sessions/SESSION_INDEX.md` updated.
 - [x] Verification run: YAML frontmatter, name-field-matches-directory, description field, skill parity, AGENTS.md cross-references, JSON validity. All pass.
 - [x] Stale references cleaned (provably stale items only): `name:` in review-diff SKILL files, AGENTS.md/CLAUDE.md mirror instructions in onboard skill, aios-intake.md footer, settings.local.json stale permission paths.
+- [x] Committed + pushed v0.1 and v0.2 to `github.com/an5onc/AIS-OS` (main in sync with origin).
+- [x] `/scaffold-next` dry-run at `~/dev/ai-os`: green scaffold (tsc + lint + build all pass on Prisma 6 + SQLite). Found and fixed 5 skill-spec gaps (Prisma 7 break, create-next-app now makes AGENTS.md/CLAUDE.md, git already init'd, .env.example gitignore trap, no verification step). Updated `scaffold-next` skill + mirror.
+- [x] Phase 3 hooks built, wired in `.claude/settings.json`, pipe-tested, and proven firing in-session: `bash_guard.py` (PreToolUse/Bash), `skill_check.py` (PostToolUse/Edit|Write), `session_context.py` (SessionStart). Documented in `.claude/hooks/README.md`.
+- [x] Added repo-level `.gitignore` (covers `settings.local.json`, OS/editor noise, env files).
 
 ## Files Changed
 
@@ -71,6 +89,12 @@
 - `EXPANSIONS.md`
 - `archives/.gitkeep`
 - `references/3ms-framework.md`
+- `.gitignore` (repo-level)
+- `.claude/settings.json` (hook wiring)
+- `.claude/hooks/bash_guard.py`
+- `.claude/hooks/skill_check.py`
+- `.claude/hooks/session_context.py`
+- `.claude/hooks/README.md`
 - `.claude/skills/onboard/SKILL.md`
 - `.claude/skills/audit/SKILL.md`
 - `.claude/skills/level-up/SKILL.md`
@@ -100,6 +124,13 @@
 - `.claude/skills/onboard/SKILL.md` + `.agents/skills/onboard/SKILL.md` — instructions updated to reflect AGENTS.md ≠ CLAUDE.md split; only CLAUDE.md gets persona content now.
 - `aios-intake.md` — footer updated to match the new AGENTS.md vs. CLAUDE.md split.
 - `.claude/settings.local.json` — stale `review/SKILL.md` permission paths cleaned at write-time (Claude Code's harness re-adds entries when commands are re-approved; this is intentional and harmless).
+- `AGENTS.md` — (later in session) added hooks to source-of-truth map + working rule #12.
+- `EXPANSIONS.md` — Tier 2 skill rows marked done; Tier 3 hooks marked done with skipped items struck through.
+- `decisions/log.md` — appended entries for /scaffold-next gaps and Phase 3 hooks.
+- `.claude/skills/scaffold-next/SKILL.md` + mirror — updated with 5 fixes from the dry-run (Prisma ^6 pin, create-next-app behavior notes, git-already-init, .env.example gitignore exception, mandatory verification step).
+
+### Side project created (outside this repo)
+- `~/dev/ai-os/` — throwaway Next.js 16 project from the `/scaffold-next` dry-run. Committed locally (2 commits), no remote. Safe to `rm -rf` anytime; nothing in AIS-OS depends on it.
 
 ### Deleted
 - None.
@@ -122,16 +153,30 @@ Expected: a list of new/modified files (working tree is intentionally dirty unti
 find . -type f -not -path './.git/*' | sort
 ```
 
-Expected (28 files at session end):
+Tracked files at session end (excludes git-ignored `settings.local.json`):
 
-- 7 new files at repo root: `AGENTS.md`, `CLAUDE.md`, `EXPANSIONS.md`, `README.md`, `aios-intake.md`, `connections.md`
+- Repo root: `AGENTS.md`, `CLAUDE.md`, `EXPANSIONS.md`, `README.md`, `aios-intake.md`, `connections.md`, `.gitignore`
 - 7 skills × 2 mirrors = 14 SKILL.md files under `.claude/skills/` and `.agents/skills/`
-- `.claude/settings.local.json` (Claude Code permission allowlist, project-local)
+- `.claude/settings.json` (hook wiring) + 4 files in `.claude/hooks/` (3 scripts + README)
 - 3 files in `context/`
 - 1 file in `decisions/` (`log.md`)
 - 2 files in `references/`
 - 3 files in `.sessions/` (SESSION_INDEX, TEMPLATE, this file)
 - `archives/.gitkeep`
+- NOTE: `.claude/settings.local.json` exists locally but is git-ignored (repo `.gitignore` + global ignore).
+
+### Hook verification (Phase 3)
+
+```sh
+# pipe-test each hook
+echo '{"tool_name":"Bash","tool_input":{"command":"rm -rf x"}}' | python3 .claude/hooks/bash_guard.py; echo "exit=$?"   # exit=2 (blocks)
+echo '{"tool_name":"Bash","tool_input":{"command":"git status"}}' | python3 .claude/hooks/bash_guard.py; echo "exit=$?"  # exit=0 (allows)
+echo '{}' | python3 .claude/hooks/session_context.py   # prints Status + TODOs
+# jq schema/nesting check
+jq -e '.hooks.PreToolUse[]|select(.matcher=="Bash")|.hooks[].command' .claude/settings.json
+```
+
+All passed. Both PreToolUse (Bash guard) and PostToolUse (skill check) were also proven firing live in-session. SessionStart fires on next session start.
 
 ### Skill YAML frontmatter check
 
@@ -160,26 +205,27 @@ Verified manually during this session. No broken links in `AGENTS.md` or `CLAUDE
 - **3Ms framework write-up is a neutral interpretation**, not Nate Herk's canonical phrasing. Flagged inside [references/3ms-framework.md](../references/3ms-framework.md). Verify against source content when operator has access.
 - **Four-Cs rubric (Context / Connections / Customization / Cadence)** is also a working interpretation. Same caveat, flagged in [.claude/skills/audit/SKILL.md](../.claude/skills/audit/SKILL.md).
 - **`aios-intake.md` Q4, Q5, Q6** still have inferred-pending-confirmation markers. Operator should confirm or correct revenue metrics, comms channels beyond Gmail/OpenPhone, and IDE / task tracker / notes-app preferences.
-- **`README.md` is effectively empty** (`# AIS-OS` only). Not stale, just not yet written. Listed under "Stale items for review" below.
-- **`.claude/settings.local.json` contains stale permission allow-list entries** that reference the pre-rename `.claude/skills/review/SKILL.md` and `.agents/skills/review/SKILL.md` paths (those folders are now `review-diff`). The permissions are harmless when stale (they just won't match), but worth cleaning up. Listed under "Stale items for review."
+- **`README.md` is effectively empty** (`# AIS-OS` only). Not stale, just not yet written. Listed under TODO.
+- **`bash_guard.py` matches command text, not intent.** A harmless `echo`/comment containing a blocked pattern (e.g. `rm -rf`) gets false-blocked. Deliberate conservative tradeoff; documented in `.claude/hooks/README.md`. If a block is wrong, run the command manually in a terminal.
+- **Hooks are project-local to AIS-OS.** They do not fire in Anson's other repos. Promoting `bash_guard.py` to `~/.claude/settings.json` (global) is queued in EXPANSIONS.
 - **No actual integration is live yet.** Every "connected" tool in [connections.md](../connections.md) means "operator can reach it manually"; no MCP servers are wired. Don't claim the AIOS can do something an integration is required for until the integration ships.
-- **All work is uncommitted.** Working tree is dirty. Operator did not authorize a commit this session.
+- **`AGENTS.md`/`CLAUDE.md`/`context/`/`connections.md`/`decisions/log.md` contain personal + business info and the repo is pushed to GitHub** (`github.com/an5onc/AIS-OS`). No secrets/credentials, but confirm the repo's visibility is what you intend (private vs public).
+- **Uncommitted since v0.2:** Phase 3 hooks + `.gitignore` + doc updates are on disk but not yet committed (5–6 changed paths). Operator commits manually.
 
 ## Blocked checks
 
-Nothing is blocked. There is no test/build/lint suite to run. The verification commands above are the full surface.
-
-If/when a skill becomes more than Markdown (e.g., a Node script invoked by a skill, or a hook with executable code), that scaffold will need its own verification — `package.json`, lint config, etc. None exists yet.
+Nothing is blocked. There is no test/build/lint suite for the AIS-OS repo (Markdown + hook scripts). The verification commands above (git, find, frontmatter, jq, hook pipe-tests) are the full surface. The `/scaffold-next` dry-run repo (`~/dev/ai-os`) verified separately with `tsc`/`lint`/`build` — all green.
 
 ## TODO / Next Session
 
+- [ ] Commit the post-v0.2 work (Phase 3 hooks, `.gitignore`, doc updates) and push.
+- [ ] Confirm GitHub repo visibility (private vs public) given personal/business content.
 - [ ] Operator confirms or fills `aios-intake.md` Q4, Q5, Q6.
-- [ ] Operator decides whether to commit this scaffold + onboarding state.
 - [ ] Operator verifies the 3Ms framework + Four-Cs rubric against Nate Herk's canonical content.
-- [ ] Decide Phase 3 direction: hooks (`PostToolUse` typecheck, `PreToolUse` destructive-Bash guard, `Stop` auto-log decisions) vs. Phase 4 MCP integrations (Gmail, GitHub, OpenPhone voicemail→SMS).
-- [ ] Try `/scaffold-next` on a throwaway directory before using it for a real NexGen Studio client engagement.
-- [ ] Decide whether to populate `README.md` (currently 9 bytes) — it could either describe the repo for public consumption or be deliberately left minimal.
-- [ ] Clean stale permission entries in `.claude/settings.local.json` (post-rename).
+- [ ] **Phase 4 (next big build):** OpenPhone voicemail→transcript→SMS-draft triage (operator's #2 weekly drag). Needs an OpenPhone MCP server + API token — real work, not a markdown skill.
+- [ ] Decide whether to populate `README.md` (currently `# AIS-OS` only).
+- [ ] Optional: promote `bash_guard.py` to global `~/.claude/settings.json` so it protects every repo.
+- [ ] Optional: drop a per-project typecheck PostToolUse hook into Anson's real TS repos (autotraq, builtbykiefer, interlockgo apps).
 
 ## Notes
 

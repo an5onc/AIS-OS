@@ -34,6 +34,14 @@ Why this matters: a single sentence of *why* now is worth an hour of archaeology
 - Reversibility: easy. Prior file versions are in git.
 - Follow-up: Operator reviews populated files. Then Phase 2 code skills. Q4/Q5/Q6 gaps marked in `connections.md` under "Pending confirmation" — fill when convenient.
 
+## 2026-06-01 — Phase 3 hooks shipped (3 of 4 planned)
+
+- Decision: Built three project-local Claude Code hooks in `.claude/hooks/`, wired in `.claude/settings.json`: (1) `bash_guard.py` PreToolUse/Bash blocks destructive commands; (2) `skill_check.py` PostToolUse/Edit|Write validates SKILL.md frontmatter + mirror parity; (3) `session_context.py` SessionStart injects latest session Status + TODO. All three pipe-tested and proven firing in-session.
+- Why: Phase 3 from EXPANSIONS. The Bash guard protects the repo + remote; the skill check directly prevents the two bugs we hit this session (name/dir mismatch, mirror drift); session-continuity makes agent handoffs warm. Chose project-local (`.claude/settings.json`) over global to contain blast radius and keep it reversible.
+- Alternatives considered: (a) Generic PostToolUse typecheck/lint — rejected, this is a Markdown repo with nothing to type-check; documented as belonging in Anson's actual TS projects. (b) Stop→auto-append decision to this log — rejected, a Stop hook can't reliably detect/summarize a material decision and wrong append-only entries are worse than none. (c) UserPromptSubmit for continuity — rejected in favor of SessionStart to avoid per-prompt token cost. (d) Global `~/.claude/settings.json` install — deferred; promote `bash_guard.py` to global once proven.
+- Reversibility: easy. Hooks are off if `.claude/settings.json` is removed or `disableAllHooks` is set; scripts are self-contained.
+- Follow-up: Known limitation — `bash_guard.py` matches command text, so `echo`/comments containing blocked patterns get false-blocked (acceptable: costs one manual re-run). Consider promoting the Bash guard to global settings. Per-project typecheck hooks for the real code repos remain open.
+
 ## 2026-06-01 — /scaffold-next dry-run found 5 spec gaps
 
 - Decision: Ran `/scaffold-next` against throwaway `~/dev/ai-os`. Skill produced a working scaffold (tsc, lint, build all green) but only after fixing 5 issues:

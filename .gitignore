@@ -1,0 +1,17 @@
+# Claude Code local overrides (personal, per-machine — never commit)
+.claude/settings.local.json
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Editor noise
+*.swp
+*~
+.idea/
+.vscode/
+
+# Env files (no secrets in this repo, but guard against future ones)
+.env
+.env.*
+!.env.example
