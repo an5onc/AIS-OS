@@ -1,6 +1,6 @@
 # Session: 2026-06-01 — Setup, onboarding, handoff system, scaffold test, Phase 3 hooks
 
-## Status: IN PROGRESS
+## Status: CLOSED
 
 ## Context / Starting Point
 
@@ -231,4 +231,5 @@ Nothing is blocked. There is no test/build/lint suite for the AIS-OS repo (Markd
 
 - Operator runs both NexGen Studio (digital studio for small businesses) and InterlockGo NOCO (ignition-interlock service) simultaneously. Bias every suggestion toward automation + leverage, not extra manual time.
 - Voicemail-to-SMS triage is operator's #2 weekly drag and a strong Tier 4 candidate once OpenPhone MCP is built.
-- Parent `/dev/CLAUDE.md` governs session save/close semantics. "save session" overwrites this file with current state. "let's close today" finalizes it (removes `## Status: IN PROGRESS` line).
+- Parent `/dev/CLAUDE.md` governs session save/close semantics. "save session" overwrites this file with current state. "let's close today" finalizes it.
+- **Session closed 2026-06-01.** Next session: start by reading AGENTS.md → SESSION_INDEX.md → this file, then `git status --short`. First action is committing the post-v0.2 work (see TODO).

@@ -4,7 +4,7 @@ Newest first. Each entry: dated filename, status, one-line summary.
 
 ## Sessions
 
-- **[2026-06-01-initial-setup.md](2026-06-01-initial-setup.md)** — IN PROGRESS — Full build day: AIOS scaffold, `/onboard` personalization, Phase 2 code skills, AGENTS.md project-handoff split, `/scaffold-next` dry-run (5 gaps fixed), Phase 3 hooks (Bash guard + skill check + session continuity), repo `.gitignore`. Pushed v0.1/v0.2; post-v0.2 work uncommitted. Operator: Anson Cordeiro.
+- **[2026-06-01-initial-setup.md](2026-06-01-initial-setup.md)** — CLOSED — Full build day: AIOS scaffold, `/onboard` personalization, Phase 2 code skills, AGENTS.md project-handoff split, `/scaffold-next` dry-run (5 gaps fixed), Phase 3 hooks (Bash guard + skill check + session continuity), repo `.gitignore`. Pushed v0.1/v0.2; post-v0.2 work uncommitted at close. Operator: Anson Cordeiro.
 
 ## Conventions
 
