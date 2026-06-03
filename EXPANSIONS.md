@@ -23,6 +23,14 @@ Highest-leverage additions for SWE pain.
 - [ ] `/metrics-weekly` — pull a weekly snapshot from GitHub commits + OpenPhone + email for the NexGen / InterlockGo dashboards (depends on Tier 4 MCPs).
 - [ ] `/lead-reply` — draft InterlockGo SMS reply from a transcribed voicemail (depends on Tier 4 OpenPhone MCP).
 
+## Tier 2.5 — NexGen Studio sales skills
+
+Skills that help turn leads into signed projects without adding manual proposal work.
+
+- [x] `/proposal-builder` — draft branded NexGen Studio website/software proposals from client inputs, offer notes, and current local competitor research. **Direct hit on NexGen proposal/research drag.** *(Shipped 2026-06-03.)*
+- [ ] `/competitor-refresh` — scheduled or manual refresh of Northern Colorado web design competitor pricing, services, add-ons, and positioning.
+- [ ] `/proposal-follow-up` — draft follow-up email/SMS after a proposal has been sent, using the proposal file and lead context.
+
 ## Tier 3 — hooks (behavior, not prompts)
 
 Hooks change what the harness *does*, not just what the model *says*. Built ones live in `.claude/hooks/` and are wired in `.claude/settings.json` — see `.claude/hooks/README.md`.

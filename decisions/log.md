@@ -62,3 +62,11 @@ Why this matters: a single sentence of *why* now is worth an hour of archaeology
 - Alternatives considered: Build voicemail/SMS triage first (rejected — requires OpenPhone MCP integration which is Tier 4 work, not a skill). Defer all code skills and build hooks instead (rejected — skills have faster payoff for solo operator).
 - Reversibility: easy.
 - Follow-up: After `/scaffold-next` ships, run it on the next real NexGen project and capture lessons in `.sessions/`.
+
+## 2026-06-03 — /level-up: NexGen proposal builder
+
+- Decision: Ship `/proposal-builder` as the next NexGen Studio leverage skill, with reusable proposal template, offer notes, and Northern Colorado competitor research.
+- Why: Proposal writing and local competitor research are repeated, research-heavy, draft-based, and directly tied to Priority 2: grow NexGen Studio through more signed projects.
+- Alternatives considered: Build only a static proposal template (rejected because it would not remove the research/comparison drag). Build a full automated web app/PDF system now (rejected because a skill + templates can be verified immediately and expanded later).
+- Reversibility: easy. Files are Markdown and can be edited or removed.
+- Follow-up: Use `/proposal-builder` on the next real lead, then add PDF export or a `/competitor-refresh` skill if the workflow repeats.

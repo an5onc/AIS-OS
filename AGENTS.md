@@ -73,6 +73,7 @@ The operations available are skill invocations and file edits:
 | `/pr-desc` | Draft a PR description | Before opening a PR |
 | `/commit-msg` | Generate a Conventional Commit message | Before committing non-trivial changes |
 | `/scaffold-next` | New Next.js project shell with Anson's defaults | Start of any NexGen Studio client project |
+| `/proposal-builder` | Draft NexGen Studio website/software proposals with local competitor context | When a prospective client needs a proposal |
 
 These are *skills*, invoked by name. They are NOT shell commands.
 

@@ -23,6 +23,10 @@ Read `references/3ms-framework.md` once. It's how Anson thinks about AI work. Mi
 - `/commit-msg` — generate Conventional Commit messages from staged changes.
 - `/scaffold-next` — generate a fresh Next.js project shell matching NexGen Studio conventions. Direct hit on Anson's #1 weekly pain.
 
+### Business-growth skills
+
+- `/proposal-builder` — draft NexGen Studio website/software proposals from a client name, need, NexGen offer notes, and local competitor research. Direct hit on NexGen proposal/research drag.
+
 ## Where things live
 
 - `context/` — about Anson, his businesses, his priorities (filled by `/onboard`)
