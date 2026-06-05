@@ -1,0 +1,12 @@
+{
+  "name": "aios-social-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AIS-OS daily social post engine: generate -> review -> publish, for multiple brands. Facebook first; Instagram later.",
+  "scripts": {
+    "generate": "node generate.js",
+    "review": "node review.js",
+    "publish": "node publish.js"
+  }
+}

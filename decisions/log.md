@@ -94,3 +94,12 @@ Why this matters: a single sentence of *why* now is worth an hour of archaeology
 - Alternatives considered: Build an automated publisher immediately (rejected because Meta/API publishing and approval rules are not ready). Keep this as a one-off prompt only (rejected because the user asked to turn the build prompt into a reusable skill).
 - Reversibility: easy. Markdown-only skill/context/template files plus generated draft output.
 - Follow-up: Use `/social-posts` manually first; add scheduled generation only after the manual workflow proves useful.
+
+## 2026-06-05 — Social posts become an engine (generate/review/publish)
+
+- Decision: Upgrade the social-posts system from static Markdown drafts into a small Node engine in `social/engine/`, modeled on Anson's working `interlockgo-social` app, generalized to both brands (KieferBuilt + InterlockGo). Facebook first; Instagram deferred.
+- Why: Anson already runs a daily generate -> review-dashboard -> publish loop for InterlockGo Facebook and wanted ours to work the same way. A review dashboard with one-click approve/publish beats hand-pasting Markdown into Meta Business Suite.
+- Key choices: brand "brain" stays in `context/brands/<brand>/*.md` (engine reads it, no code change to retune voice); one FB Page token per brand; KieferBuilt attaches real photo URLs (FB photo-by-URL), InterlockGo stays text-only; launchd runs 8 AM daily.
+- Alternatives considered: generalize Anson's existing app in place (rejected — he wanted it folded into AIS-OS); keep the static Markdown skill (rejected — no notify/approve/publish). Instagram now (deferred — needs IG Business accounts + image hosting).
+- Reversibility: easy. Engine is isolated under `social/engine/`; secrets/drafts/logs are gitignored.
+- Follow-up: connect both FB Page tokens (`setup-meta.md`), test-post one draft per brand, run for a week, then scope the Instagram phase.

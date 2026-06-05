@@ -88,3 +88,8 @@ If the patterns prove out for you, they're templateable for others.
 Things considered and parked. Move entries here instead of deleting so future-you knows why something didn't make it.
 
 - (none yet)
+
+## Social engine — next phases
+- Instagram support (IG Business account per Page + image hosting + Content Publishing API).
+- Wire `social/_inbox/` daily notes into the engine so Anson can steer a day's topic/photo.
+- Optional: image generation for InterlockGo posts (hosted publicly so IG can use them).

@@ -98,3 +98,17 @@ Verification run this session:
 ## Notes
 
 - This directly supports repeatable business content without introducing social API risk.
+
+---
+
+## Update — social engine added (generate/review/publish)
+
+- Built `social/engine/` (Node, ESM, no deps): `lib/util.js`, `generate.js`, `review.js`, `publish.js`,
+  `get-token.js`, `daily.sh`, `install-launchd.sh`, `secrets.env.example`, `setup-meta.md`, `README.md`.
+- Reads brand context from `context/brands/<brand>/*.md`; Facebook only for now.
+- KieferBuilt posts attach a real photo URL (FB photo-by-URL); InterlockGo is text-only.
+- Updated `social-posts` SKILL.md (both `.claude` and `.agents`, verified identical) to point at the engine.
+- Verified: `node --check` on all 5 JS files; `bash -n` on both shell scripts; ran a logic test that parsed
+  6 pillars per brand + 8 KieferBuilt image URLs and round-tripped a draft (all green).
+- NOT yet done (needs Anson / his machine): add the two FB Page tokens to `social/engine/secrets.env`,
+  run `node generate.js`, approve a test post, then `./install-launchd.sh`. Instagram phase not started.

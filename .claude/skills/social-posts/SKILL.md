@@ -1,43 +1,39 @@
 ---
 name: social-posts
-description: Generate one Facebook and one Instagram draft post per brand (KieferBuilt and InterlockGo) for a given day, formatted for human review and manual scheduling in Meta Business Suite. Use when the user says "daily posts", "social posts", "make today's posts", or names a brand and a date.
+description: Daily Facebook post generator + review/publish loop for KieferBuilt and InterlockGo. The engine lives in social/engine/ (generate -> review dashboard -> publish to Facebook). Use when the user says "daily posts", "social posts", "make today's posts", "generate posts", or names a brand and a date.
 ---
 
-# Daily social post generator
+# Daily social post engine
 
-## What this does
-Produces 4 draft posts (KieferBuilt FB + IG, InterlockGo FB + IG) for one day into a dated review file. Does NOT publish anything.
+The daily driver is a small Node app in `social/engine/` modeled on Anson's working
+`interlockgo-social` app, generalized to both brands. The brand "brain" is the Markdown in
+`context/brands/<brand>/` — edit those files to change voice, pillars, or image rules; no code change.
 
-## Steps (follow in order)
+## The loop
+```
+generate.js  -> for each brand, picks the next content pillar and writes a Facebook caption via the
+                `claude` CLI. KieferBuilt attaches a real photo URL (from image-strategy.md);
+                InterlockGo is text-only. Saves drafts/<brand>-<date>-facebook.json (status: pending).
+review.js    -> http://localhost:4500 dashboard: edit, Approve & Post, or Reject (phone-friendly).
+publish.js   -> on approve, posts to that brand's Facebook Page via Graph API (photo-by-URL or text).
+```
+Scheduling: `install-launchd.sh` runs generate at 8 AM daily and keeps the dashboard alive.
+Credentials: one Facebook Page token per brand in `social/engine/secrets.env` (see `setup-meta.md`).
 
-1. **Determine the date.** Default to today unless the user gives a date. Set `DATE = YYYY-MM-DD`.
+## To generate/run on demand
+- `cd social/engine && node generate.js` (today, both brands) — also `--brand=kiefer-built`, a date, or `--force`.
+- `node review.js` then open the dashboard to review/approve.
+- Never auto-publish from this skill. Approval + posting happen through the dashboard or `publish.js`.
 
-2. **Check for input notes.** Look in `social/_inbox/` for files named `{DATE}-kiefer-built.md` and `{DATE}-interlockgo.md`. If present, their instructions OVERRIDE the pillar rotation for that brand.
+## Hard rules (still apply)
+- Two separate voices; never mix KieferBuilt and InterlockGo.
+- KieferBuilt: real photos only, never AI homes. InterlockGo: zero judgment, no legal promises, no DUI jokes.
+- Do not invent specific projects, prices, customers, or awards.
 
-3. **For EACH brand (kiefer-built, interlockgo):**
-   a. Read `context/brands/<brand>/brand.md`, `voice.md`, `content-pillars.md`, `image-strategy.md`.
-   b. Pick the day's pillar: if an input note specifies a topic, use it; otherwise advance the pillar rotation. To find the last pillar used, look at the most recent prior file in `social/` and pick the next pillar in the list (loop after the last). If no prior file exists, start at pillar 1.
-   c. Write a **Facebook** caption following that brand's voice + platform notes (FB rules).
-   d. Write an **Instagram** caption following that brand's voice + platform notes (IG rules).
-   e. For each post, produce an **image plan** strictly per that brand's `image-strategy.md` (KieferBuilt = REAL PHOTO or NEEDS PHOTO, never AI homes; InterlockGo = REAL PHOTO / GENERATE / TEXT GRAPHIC).
-   f. Choose platform-appropriate hashtags per voice.md.
+## Status
+- Facebook: live for both brands.
+- Instagram: not wired yet — needs an IG Business account per Page + an image-hosting pipeline (next phase).
 
-4. **Write the output file.** Copy `social/_templates/daily-posts-template.md` to `social/{DATE}/posts.md` and fill in every `{{...}}` placeholder. Suggested times: KieferBuilt ~ weekday late morning (10:00) and early evening (17:30); InterlockGo ~ weekday morning (08:30) and midday (12:00). These are suggestions the human can change.
-
-5. **Apply the golden rules** from the build prompt: no publishing, no invented facts, two separate voices, no shaming for InterlockGo, no AI homes for KieferBuilt.
-
-6. **Report.** Tell the user the file path and a one-line summary of what each post covers. Remind them to review, approve, and paste into Meta Business Suite.
-
-## Quality bar (match these examples)
-
-**KieferBuilt — Instagram (craftsmanship pillar):**
-> Twenty-five years in, and the part we still obsess over is the finish work — trim that lines up, tile that meets clean, details you'll run your hand across for the next thirty years. Custom homes and remodels across Northern Colorado.
-> Planning a build? Link in bio. 📍 Windsor, CO
-> Hashtags: #northerncolorado #customhomebuilder #windsorco #fortcollins #lovelandco #remodel #craftsmanship #coloradohomes
-> Image plan: REAL PHOTO — https://www.builtbykiefer.com/images/project-3/kitchen-island-front.jpg (finish detail matches the caption)
-
-**InterlockGo — Facebook (how-it-works pillar):**
-> Got an interlock requirement and not sure where to start? Here's the short version: call us, we match you to the right device (Lifesafer or Guardian), install it the same day with clean wiring, and notarize your Colorado DMV affidavit before you leave — one trip. Straight answers, no judgment.
-> Call 970-515-5740 · interlockgo.io
-> Hashtags: #northerncolorado #greeleyco #evansco
-> Image plan: GENERATE — clean, calm photo of a car dashboard/steering wheel in daylight, device discreetly present, professional, 1.91:1, no text; avoid any police/handcuffs/alcohol/shaming imagery.
+## Older flow (superseded)
+The earlier static-Markdown approach (`social/_templates/`, `social/<date>/posts.md`, `social/_inbox/`)
+is kept for reference and manual notes, but the engine above is now the daily driver.
