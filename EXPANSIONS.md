@@ -28,8 +28,10 @@ Highest-leverage additions for SWE pain.
 Skills that help turn leads into signed projects without adding manual proposal work.
 
 - [x] `/proposal-builder` — draft branded NexGen Studio website/software proposals from client inputs, offer notes, and current local competitor research. **Direct hit on NexGen proposal/research drag.** *(Shipped 2026-06-03.)*
-- [ ] `/competitor-refresh` — scheduled or manual refresh of Northern Colorado web design competitor pricing, services, add-ons, and positioning.
-- [ ] `/proposal-follow-up` — draft follow-up email/SMS after a proposal has been sent, using the proposal file and lead context.
+- [x] `/proposal-finalizer` — render proposal Markdown into a branded NexGen PDF using stored brand assets, pricing checks, and preview QA. *(Shipped 2026-06-03.)*
+- [x] `/competitor-refresh` — scheduled or manual refresh of Northern Colorado web design competitor pricing, services, add-ons, and positioning. *(Shipped 2026-06-03.)*
+- [x] `/proposal-follow-up` — draft follow-up email/SMS after a proposal has been sent, using the proposal file and lead context. *(Shipped 2026-06-03.)*
+- [x] `/lead-intake` — turn rough client notes into a clean proposal-ready lead brief. *(Shipped 2026-06-03.)*
 
 ## Tier 3 — hooks (behavior, not prompts)
 

@@ -26,6 +26,10 @@ Read `references/3ms-framework.md` once. It's how Anson thinks about AI work. Mi
 ### Business-growth skills
 
 - `/proposal-builder` — draft NexGen Studio website/software proposals from a client name, need, NexGen offer notes, and local competitor research. Direct hit on NexGen proposal/research drag.
+- `/lead-intake` — turn rough client notes into a clean lead brief before proposal drafting.
+- `/proposal-finalizer` — turn proposal Markdown into a branded NexGen PDF with pricing/service-area checks and visual QA.
+- `/competitor-refresh` — refresh local competitor pricing/services/add-ons before proposal work.
+- `/proposal-follow-up` — draft email/SMS follow-up after a proposal has been sent.
 
 ## Where things live
 

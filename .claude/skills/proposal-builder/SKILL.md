@@ -7,6 +7,8 @@ description: Generate a NexGen Studio website or software proposal from client i
 
 You are drafting a professional NexGen Studio proposal for a prospective small-business client. The goal is to remove the repeated manual work: local research, competitor comparison, scope framing, and branded proposal writing.
 
+Use `/lead-intake` first if the client details are messy or scattered. Use `/proposal-finalizer` after this skill when Anson wants a branded PDF.
+
 ## Pre-flight
 
 Ask Anson for only the missing inputs from this list:
@@ -26,6 +28,7 @@ Read these files before drafting:
 - `context/priorities.md`
 - `references/voice.md`
 - `references/nexgen-offer.md`
+- `references/nexgen-pricing.md`
 - `references/competitors/noco-web-design.md`
 - `templates/proposal.md`
 
@@ -46,7 +49,8 @@ If the request needs a specific client website audit or current competitor prici
 7. Include a "Local Market Context" section with careful, sourced claims.
 8. Include a "Why NexGen Studio" section that contrasts NexGen against template/CMS shops without insulting competitors.
 9. Save the draft to `proposals/YYYY-MM-DD-<client-slug>.md`.
-10. Show Anson the draft and ask what to revise before he sends it.
+10. Show Anson the draft and ask what to revise before finalizing.
+11. If he approves the draft, recommend `/proposal-finalizer` to produce the branded PDF.
 
 ## Positioning rules
 
@@ -106,3 +110,4 @@ If the proposal used live competitor research, confirm the draft includes source
 - Do not fabricate client facts, pricing, testimonials, competitor claims, or case-study metrics.
 - If pricing is unknown, provide ranges or options labeled "placeholder for Anson to confirm."
 - Keep proposals practical. The client should understand what they get, why it matters, what it costs, and what happens next.
+- Do not generate the final PDF here. Hand off to `/proposal-finalizer`.

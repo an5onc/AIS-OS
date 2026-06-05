@@ -17,6 +17,8 @@
 - [x] Update project docs, decisions log, and session handoff.
 - [x] Draft first real proposal for The Last Brush LLC.
 - [x] Generate branded final PDF proposal using NexGen logo/card assets.
+- [x] Build proposal workflow stack: `/lead-intake`, `/proposal-finalizer`, `/competitor-refresh`, `/proposal-follow-up`.
+- [x] Add tested reusable PDF renderer at `scripts/render_proposal_pdf.py`.
 
 ## Decisions
 
@@ -38,14 +40,33 @@
 - [x] Generated `proposals/2026-06-03-the-last-brush-llc-branded.pdf` with NexGen logo, blue/teal/green palette, and contact info from the card.
 - [x] Revised branded PDF after operator feedback: lowered inner-page header logo and made cover logo a foreground element over the blue layout.
 - [x] Removed unwanted cover-logo rectangle by replacing the title page with a clean white/green logo mask.
+- [x] Added renderer tests for slugging, Markdown extraction, PDF text output, and long cover-title wrapping.
+- [x] Added NexGen brand and pricing references.
+- [x] Added lead brief and proposal follow-up templates.
 
 ## Files Changed
 
 - `.claude/skills/proposal-builder/SKILL.md` (new)
 - `.agents/skills/proposal-builder/SKILL.md` (new)
+- `.claude/skills/proposal-finalizer/SKILL.md` (new)
+- `.agents/skills/proposal-finalizer/SKILL.md` (new)
+- `.claude/skills/competitor-refresh/SKILL.md` (new)
+- `.agents/skills/competitor-refresh/SKILL.md` (new)
+- `.claude/skills/proposal-follow-up/SKILL.md` (new)
+- `.agents/skills/proposal-follow-up/SKILL.md` (new)
+- `.claude/skills/lead-intake/SKILL.md` (new)
+- `.agents/skills/lead-intake/SKILL.md` (new)
+- `scripts/render_proposal_pdf.py` (new)
+- `tests/test_render_proposal_pdf.py` (new)
 - `templates/proposal.md` (new)
+- `templates/lead-brief.md` (new)
+- `templates/proposal-follow-up.md` (new)
 - `references/nexgen-offer.md` (new)
+- `references/nexgen-brand.md` (new)
+- `references/nexgen-pricing.md` (new)
 - `references/competitors/noco-web-design.md` (new)
+- `leads/.gitkeep` (new)
+- `proposals/follow-ups/.gitkeep` (new)
 - `proposals/.gitkeep` (new)
 - `proposals/2026-06-03-the-last-brush-llc.md` (new)
 - `proposals/2026-06-03-the-last-brush-llc-branded.pdf` (new)
@@ -70,9 +91,11 @@
 - Use `/proposal-builder` with a real or fake lead and confirm it writes `proposals/YYYY-MM-DD-<client-slug>.md`.
 - `test -f proposals/2026-06-03-the-last-brush-llc.md && grep -n "Prepared by NexGen Studio" proposals/2026-06-03-the-last-brush-llc.md && grep -n "Local Market Context" proposals/2026-06-03-the-last-brush-llc.md`
 - `grep -n "https://" proposals/2026-06-03-the-last-brush-llc.md`
-- PDF text check with `pypdf`: confirm 7 pages and required strings (`The Last Brush LLC`, `Prepared by NexGen Studio`, `Custom Design`, `Local Market Context`, `Investment`, `970.909.4951`, `anson@nexgenstudio.io`).
+- PDF text check with `pypdf`: confirm required strings (`The Last Brush LLC`, `Prepared by NexGen Studio`, `Custom Design`, `Local Market Context`, `Investment`, `970.909.4951`, `anson@nexgenstudio.io`).
 - Quick Look thumbnail render for branded PDF cover.
 - Quick Look thumbnail render for branded PDF inner pages after header/cover revision.
+- `python3 -m unittest discover -s tests -p 'test_*.py' -v`
+- `python3 scripts/render_proposal_pdf.py proposals/2026-06-03-the-last-brush-llc.md --out /tmp/last-brush-renderer-smoke.pdf`
 
 Verification run this session:
 
@@ -88,13 +111,16 @@ Verification run this session:
 - Branded PDF cover preview: passed after regenerating once to fix gradient color math.
 - Revised cover logo and lowered header logo preview: passed.
 - Cover rectangle removal: passed.
+- Renderer unit tests: passed, 4 tests.
+- Renderer smoke PDF text check: passed.
+- Renderer smoke cover preview: passed after adding long-title wrapping.
 
 ## Issues / Risks
 
 - Competitor pricing/services are public-source snapshots from 2026-06-03 and must be re-browsed before sending a live proposal with specific price claims.
 - NexGen Studio final pricing is not documented yet. Proposal drafts should use option placeholders or ask Anson to confirm investment ranges.
 - The Last Brush LLC exact public website/location was not clearly found in quick search, so the draft says service area and existing website are still to be confirmed.
-- PDF export is not built yet.
+- PDF export is now built as `scripts/render_proposal_pdf.py`, but only for NexGen proposal Markdown. It is not a general document renderer.
 - Gmail/CRM integrations are not wired. This skill drafts only and does not send anything.
 
 ## TODO / Next Session
@@ -102,8 +128,12 @@ Verification run this session:
 - [x] Run `/proposal-builder` against the next real NexGen Studio lead.
 - [ ] Decide NexGen Studio default proposal pricing ranges for Website Refresh, Custom Business Website, and Website + Operations Workflow.
 - [ ] Confirm final price, service area, logo/assets, and contact info for The Last Brush LLC proposal.
-- [ ] Consider adding `/competitor-refresh` if competitor research becomes a weekly/monthly recurring task.
-- [ ] Consider adding PDF export once the Markdown draft format feels right.
+- [x] Add `/competitor-refresh`.
+- [x] Add PDF export.
+- [x] Add `/proposal-follow-up`.
+- [x] Add `/lead-intake`.
+- [ ] Use `/lead-intake` on the next messy lead before proposal drafting.
+- [ ] Use `/proposal-follow-up` after sending The Last Brush LLC proposal.
 
 ## Notes
 

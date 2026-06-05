@@ -70,3 +70,11 @@ Why this matters: a single sentence of *why* now is worth an hour of archaeology
 - Alternatives considered: Build only a static proposal template (rejected because it would not remove the research/comparison drag). Build a full automated web app/PDF system now (rejected because a skill + templates can be verified immediately and expanded later).
 - Reversibility: easy. Files are Markdown and can be edited or removed.
 - Follow-up: Use `/proposal-builder` on the next real lead, then add PDF export or a `/competitor-refresh` skill if the workflow repeats.
+
+## 2026-06-03 — Proposal workflow expanded
+
+- Decision: Build the full NexGen proposal workflow stack: `/lead-intake`, `/proposal-builder`, `/proposal-finalizer`, `/competitor-refresh`, and `/proposal-follow-up`, backed by brand/pricing references, templates, and a tested PDF renderer.
+- Why: The first real proposal showed the next bottleneck was not just writing the proposal, but reliably moving from rough lead notes to a branded final PDF and follow-up without hand-building each step.
+- Alternatives considered: Keep manually generating PDFs from proposal drafts (rejected because the same layout issues would recur). Build a full web app now (rejected because skills plus a renderer solve the immediate workflow with less maintenance).
+- Reversibility: easy. Skills/templates/references are Markdown; renderer is isolated in `scripts/render_proposal_pdf.py`.
+- Follow-up: Use the workflow on the next lead and decide whether to add a UI or scheduled competitor refresh later.
