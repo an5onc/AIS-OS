@@ -33,6 +33,12 @@ Skills that help turn leads into signed projects without adding manual proposal 
 - [x] `/proposal-follow-up` — draft follow-up email/SMS after a proposal has been sent, using the proposal file and lead context. *(Shipped 2026-06-03.)*
 - [x] `/lead-intake` — turn rough client notes into a clean proposal-ready lead brief. *(Shipped 2026-06-03.)*
 
+## Tier 2.6 — business content skills
+
+Skills that produce review-ready marketing content without publishing anything automatically.
+
+- [x] `/social-posts` — generate daily Facebook and Instagram draft posts for KieferBuilt and InterlockGo, using separate brand context, voice rules, content pillars, and image rules. *(Shipped 2026-06-05.)*
+
 ## Tier 3 — hooks (behavior, not prompts)
 
 Hooks change what the harness *does*, not just what the model *says*. Built ones live in `.claude/hooks/` and are wired in `.claude/settings.json` — see `.claude/hooks/README.md`.
@@ -65,6 +71,7 @@ Scheduled runs that don't need you in the loop.
 - [ ] Daily Gmail triage (depends on Gmail MCP).
 - [ ] Daily PR babysitter (depends on GitHub MCP).
 - [ ] Daily InterlockGo voicemail sweep (depends on OpenPhone MCP).
+- [ ] Daily `/social-posts` reminder/generation for manual review before Meta Business Suite scheduling.
 
 ## Tier 6 — productization (optional)
 

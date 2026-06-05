@@ -44,12 +44,14 @@ Read in this order when joining the project cold:
 | [decisions/log.md](decisions/log.md) | Append-only decisions log | Before re-litigating any settled question |
 | [aios-intake.md](aios-intake.md) | Raw Q1-Q7 intake | When persona/context seems wrong |
 | [EXPANSIONS.md](EXPANSIONS.md) | Planned growth menu (tiered) | When deciding what to build next |
+| [context/brands/](context/brands/) | Brand-specific social/content references | Before drafting daily posts or brand content |
 
 Folders without single-file sources:
 
 - [`.claude/skills/`](.claude/skills/) — Claude Code skills. Each is `<name>/SKILL.md` with YAML frontmatter (`name`, `description`).
 - [`.agents/skills/`](.agents/skills/) — Codex mirrors. Must stay in sync with `.claude/skills/`.
 - [`.claude/hooks/`](.claude/hooks/) — project-local hook scripts, wired in [`.claude/settings.json`](.claude/settings.json). See [`.claude/hooks/README.md`](.claude/hooks/README.md).
+- [`social/`](social/) — daily social post drafts, inbox notes, and reusable post templates. Drafts are for manual review and scheduling only.
 - [`archives/`](archives/) — long-term storage. Move files here instead of deleting.
 
 ## Required environment variables
@@ -78,6 +80,7 @@ The operations available are skill invocations and file edits:
 | `/proposal-finalizer` | Render a proposal Markdown file into a branded NexGen PDF | After proposal-builder draft approval |
 | `/competitor-refresh` | Refresh competitor pricing/services/add-ons with live sources | Before proposals that rely on current market claims |
 | `/proposal-follow-up` | Draft follow-up email/SMS after a proposal has been sent | After a proposal is delivered |
+| `/social-posts` | Draft daily Facebook and Instagram posts for KieferBuilt and InterlockGo | When creating daily posts for manual Meta Business Suite scheduling |
 
 These are *skills*, invoked by name. They are NOT shell commands.
 
@@ -143,4 +146,4 @@ If you are reading this file for the first time:
 
 ---
 
-*This file last updated: 2026-06-01. If today's date is meaningfully later and you see drift between the contents above and the repo state, update this file before continuing.*
+*This file last updated: 2026-06-05. If today's date is meaningfully later and you see drift between the contents above and the repo state, update this file before continuing.*

@@ -78,3 +78,19 @@ Why this matters: a single sentence of *why* now is worth an hour of archaeology
 - Alternatives considered: Keep manually generating PDFs from proposal drafts (rejected because the same layout issues would recur). Build a full web app now (rejected because skills plus a renderer solve the immediate workflow with less maintenance).
 - Reversibility: easy. Skills/templates/references are Markdown; renderer is isolated in `scripts/render_proposal_pdf.py`.
 - Follow-up: Use the workflow on the next lead and decide whether to add a UI or scheduled competitor refresh later.
+
+## 2026-06-05 — README becomes human-facing overview
+
+- Decision: Replace the placeholder `README.md` with a plain-English project overview, feature catalog, current gaps, and future roadmap.
+- Why: The repo had strong agent handoffs and expansion notes, but no single human-readable file explaining the project simply and thoroughly.
+- Alternatives considered: Create a separate `PROJECT_OVERVIEW.md` (rejected because `README.md` is the file people naturally open first).
+- Reversibility: easy. Markdown-only documentation change.
+- Follow-up: Keep `README.md` updated when major features ship.
+
+## 2026-06-05 — Daily social post workflow added
+
+- Decision: Add `/social-posts` as a manual-review drafting skill for KieferBuilt and InterlockGo Facebook/Instagram posts.
+- Why: Daily social posts are repetitive but brand-sensitive. A skill with separate brand files, content pillars, and image rules gives Anson repeatable drafts without risking accidental publishing.
+- Alternatives considered: Build an automated publisher immediately (rejected because Meta/API publishing and approval rules are not ready). Keep this as a one-off prompt only (rejected because the user asked to turn the build prompt into a reusable skill).
+- Reversibility: easy. Markdown-only skill/context/template files plus generated draft output.
+- Follow-up: Use `/social-posts` manually first; add scheduled generation only after the manual workflow proves useful.

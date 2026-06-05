@@ -4,6 +4,7 @@ Newest first. Each entry: dated filename, status, one-line summary.
 
 ## Sessions
 
+- **[2026-06-05-social-posts.md](2026-06-05-social-posts.md)** — IN PROGRESS — Added `/social-posts`, brand context for KieferBuilt and InterlockGo, daily post templates, and a 2026-06-05 dry-run output. Operator: Anson Cordeiro.
 - **[2026-06-03-proposal-builder.md](2026-06-03-proposal-builder.md)** — IN PROGRESS — Built first NexGen Studio proposal automation: `/proposal-builder`, template, offer notes, and Northern Colorado competitor research. Operator: Anson Cordeiro.
 - **[2026-06-01-initial-setup.md](2026-06-01-initial-setup.md)** — CLOSED — Full build day: AIOS scaffold, `/onboard` personalization, Phase 2 code skills, AGENTS.md project-handoff split, `/scaffold-next` dry-run (5 gaps fixed), Phase 3 hooks (Bash guard + skill check + session continuity), repo `.gitignore`. Pushed v0.1/v0.2; post-v0.2 work uncommitted at close. Operator: Anson Cordeiro.
 

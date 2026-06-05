@@ -19,6 +19,7 @@
 - [x] Generate branded final PDF proposal using NexGen logo/card assets.
 - [x] Build proposal workflow stack: `/lead-intake`, `/proposal-finalizer`, `/competitor-refresh`, `/proposal-follow-up`.
 - [x] Add tested reusable PDF renderer at `scripts/render_proposal_pdf.py`.
+- [x] Replace placeholder `README.md` with a human-facing overview, feature catalog, gaps, and roadmap.
 
 ## Decisions
 
@@ -43,6 +44,7 @@
 - [x] Added renderer tests for slugging, Markdown extraction, PDF text output, and long cover-title wrapping.
 - [x] Added NexGen brand and pricing references.
 - [x] Added lead brief and proposal follow-up templates.
+- [x] Rewrote `README.md` as the plain-English entry point for humans.
 
 ## Files Changed
 
@@ -77,6 +79,7 @@
 - `brand-assets/nexgen/nexgenlogo-cover-clean.png` (new)
 - `CLAUDE.md` (modified)
 - `AGENTS.md` (modified)
+- `README.md` (modified)
 - `EXPANSIONS.md` (modified)
 - `decisions/log.md` (modified)
 - `.sessions/SESSION_INDEX.md` (modified)
@@ -114,6 +117,7 @@ Verification run this session:
 - Renderer unit tests: passed, 4 tests.
 - Renderer smoke PDF text check: passed.
 - Renderer smoke cover preview: passed after adding long-title wrapping.
+- README existence/content check: `README.md` now contains Explain It Like I Am 5, built features, current gaps, and future features.
 
 ## Issues / Risks
 
@@ -134,6 +138,7 @@ Verification run this session:
 - [x] Add `/lead-intake`.
 - [ ] Use `/lead-intake` on the next messy lead before proposal drafting.
 - [ ] Use `/proposal-follow-up` after sending The Last Brush LLC proposal.
+- [ ] Keep `README.md` updated when the next major feature ships.
 
 ## Notes
 
