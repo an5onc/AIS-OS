@@ -14,7 +14,7 @@ The daily driver is a small Node app in `social/engine/` modeled on Anson's work
 generate.js  -> for each brand, picks the next content pillar and writes a Facebook caption via the
                 `claude` CLI. KieferBuilt attaches a real photo URL (from image-strategy.md);
                 InterlockGo is text-only. Saves drafts/<brand>-<date>-facebook.json (status: pending).
-review.js    -> http://localhost:4500 dashboard: edit, Approve & Post, or Reject (phone-friendly).
+review.js    -> http://localhost:4600 dashboard: edit, Approve & Post, Reject, or Delete (phone-friendly).
 publish.js   -> on approve, posts to that brand's Facebook Page via Graph API (photo-by-URL or text).
 ```
 Scheduling: `install-launchd.sh` runs generate at 8 AM daily and keeps the dashboard alive.

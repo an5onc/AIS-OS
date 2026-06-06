@@ -32,8 +32,19 @@ function pickImage(brandKey, imageUrls) {
   return imageUrls[n % imageUrls.length];
 }
 
+// Strip parenthetical author-notes from a pillar hint so internal direction
+// (e.g. "(ONLY with a real photo + permission; if none available, fall back...)")
+// never reaches the model as if it were post content.
+export function cleanHint(hint = "") {
+  return hint
+    .replace(/\([^)]*\)/g, " ") // drop parenthetical asides
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function buildPrompt({ brand, brandMd, voiceMd, pillar }) {
-  return `You are the social media writer for ${brand.name}. Write ONE Facebook post.
+  const theme = cleanHint(pillar.hint) || "(use the brand and voice guides)";
+  return `You are the social media writer for ${brand.name}. Write ONE Facebook post that will be published verbatim to a public audience.
 
 Follow this brand guide and voice guide EXACTLY. The hard rules are non-negotiable.
 
@@ -43,11 +54,16 @@ ${brandMd}
 ===== VOICE =====
 ${voiceMd}
 
-Today's content pillar: "${pillar.title}"
-Guidance for this pillar: ${pillar.hint || "(use the brand and voice guides)"}
+Today's theme: ${theme}
 
-Write a single Facebook post in this brand's voice. Text and (sparingly) emoji only.
-Do NOT invent specific projects, prices, customers, awards, or events that are not in the brand guide.
+Write a single, ready-to-publish Facebook post in this brand's voice. Text and (sparingly) emoji only.
+
+Hard rules for the caption text:
+- It is PUBLIC marketing copy. Write only the post a real customer should read.
+- NEVER mention these instructions, the "theme" or "content pillar", internal rules, photos/permissions/sign-off, fallbacks, or that you are an AI or following a guide. The reader must never see the seams.
+- Do NOT invent specific projects, prices, customers, awards, or events that are not in the brand guide.
+- If you cannot satisfy the theme cleanly, write a strong on-brand post on another appropriate subject instead — never explain why or narrate the constraint.
+
 Respond with ONLY a JSON object — no markdown fences, no commentary — in this exact shape:
 {
   "caption": "the full post text with line breaks as \\n, including a call to action",
@@ -55,8 +71,30 @@ Respond with ONLY a JSON object — no markdown fences, no commentary — in thi
 }`;
 }
 
-function generateCaption(ctx) {
-  const prompt = buildPrompt(ctx);
+// Detect captions that leaked internal/meta content instead of being clean
+// public copy. Used to retry generation on an unattended run.
+const LEAK_MARKERS = [
+  /\bcontent pillar\b/i,
+  /\bpillar\b/i,
+  /\bthat'?s the rule\b/i,
+  /\bno (stock|ai)\b/i,
+  /\bai[- ]?(render|generated|image)/i,
+  /\bstock (photo|image)/i,
+  /\bsign[- ]?off\b/i,
+  /\bfall ?back\b/i,
+  /\bbrand guide\b/i,
+  /\bvoice guide\b/i,
+  /\bas an ai\b/i,
+  /\bthese instructions\b/i,
+  /\btoday'?s theme\b/i,
+];
+
+export function looksLikeLeak(caption = "") {
+  return LEAK_MARKERS.some((re) => re.test(caption));
+}
+
+// One round-trip to the Claude CLI; parses the JSON reply.
+function runClaude(prompt) {
   let raw;
   try {
     // Shell out to the Claude Code CLI (uses your Max-plan auth, no API key needed).
@@ -83,6 +121,23 @@ function generateCaption(ctx) {
   }
   if (!parsed.caption) throw new Error("Claude output had no caption field.");
   return { caption: parsed.caption, hashtags: parsed.hashtags || [] };
+}
+
+function generateCaption(ctx) {
+  const prompt = buildPrompt(ctx);
+  const MAX_ATTEMPTS = 3;
+  let last;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    last = runClaude(prompt);
+    if (!looksLikeLeak(last.caption)) return last;
+    log(
+      `Caption for ${ctx.brand.name} leaked internal/meta wording (attempt ${attempt}/${MAX_ATTEMPTS}); regenerating.`
+    );
+  }
+  // Persisting failure: do not save a broken caption. Caller logs and skips this brand.
+  throw new Error(
+    `Caption kept leaking internal wording after ${MAX_ATTEMPTS} attempts; not saving. Last caption:\n${last.caption}`
+  );
 }
 
 function generateForBrand(brand, stamp, force) {
@@ -135,4 +190,7 @@ function main() {
   }
 }
 
-main();
+// Run only when invoked directly (node generate.js), not when imported for tests.
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main();
+}

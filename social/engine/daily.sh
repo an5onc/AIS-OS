@@ -6,7 +6,9 @@ cd "$(dirname "$0")"
 PORT=$(grep -E '^REVIEW_PORT=' secrets.env 2>/dev/null | cut -d= -f2 || true)
 PORT=${PORT:-4500}
 
-if node generate.js >> logs/agent.log 2>&1; then
+# generate.js already appends to logs/agent.log; capture only stderr/crashes here
+# (redirecting stdout to agent.log too would double every line).
+if node generate.js >> logs/daily.run.log 2>&1; then
   osascript -e "display notification \"New social posts are ready to review.\" with title \"AIS-OS Social\" sound name \"Glass\"" || true
   open "http://localhost:${PORT}/" || true
 else

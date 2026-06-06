@@ -2,6 +2,7 @@ import http from "node:http";
 import os from "node:os";
 import { loadSecrets, listDrafts, readDraft, writeDraft, log } from "./lib/util.js";
 import { publishDraft } from "./publish.js";
+import { deleteDraftPost } from "./delete.js";
 
 const env = loadSecrets();
 const PORT = Number(env.REVIEW_PORT) || 4500;
@@ -18,7 +19,7 @@ function esc(s = "") {
 }
 
 function statusColor(s) {
-  return { pending: "#b45309", approved: "#1d4ed8", posted: "#15803d", rejected: "#9ca3af" }[s] || "#333";
+  return { pending: "#b45309", approved: "#1d4ed8", posted: "#15803d", rejected: "#9ca3af", deleted: "#991b1b" }[s] || "#333";
 }
 
 function brandColor(b) {
@@ -52,8 +53,13 @@ function card(d) {
         <button class="approve" formaction="/approve" onclick="return confirm('Post this to ${esc(d.brandName || d.brand)} Facebook now?')">Approve &amp; Post</button>
         <button class="reject" formaction="/reject" onclick="return confirm('Reject and discard this draft?')">Reject</button>
       </div>`
-          : d.postId
-          ? `<div class="meta">Posted · id ${esc(d.postId)}</div>`
+          : d.status === "posted" && d.postId
+          ? `<div class="actions">
+        <span class="meta">Posted · id ${esc(d.postId)}</span>
+        <button class="reject" formaction="/delete" onclick="return confirm('Delete this post from ${esc(d.brandName || d.brand)} Facebook? This cannot be undone.')">Delete from Facebook</button>
+      </div>`
+          : d.status === "deleted"
+          ? `<div class="meta">Deleted from Facebook · was id ${esc(d.deletedPostId || "")}</div>`
           : ""
       }
     </form>
@@ -143,6 +149,17 @@ const server = http.createServer(async (req, res) => {
         log(`Approve/post failed for ${body.id}: ${err.message}`);
         res.writeHead(500, { "Content-Type": "text/plain" });
         return res.end(`Post failed: ${err.message}\n\nGo back and try again once fixed.`);
+      }
+      return redirect(res);
+    }
+
+    if (req.url === "/delete") {
+      try {
+        await deleteDraftPost(body.id);
+      } catch (err) {
+        log(`Delete failed for ${body.id}: ${err.message}`);
+        res.writeHead(500, { "Content-Type": "text/plain" });
+        return res.end(`Delete failed: ${err.message}\n\nGo back and try again.`);
       }
       return redirect(res);
     }

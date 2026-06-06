@@ -68,7 +68,10 @@ launchctl bootout "$GUI/com.aios.social.daily" 2>/dev/null || true
 launchctl bootstrap "$GUI" "$REVIEW_PLIST"
 launchctl bootstrap "$GUI" "$DAILY_PLIST"
 
+PORT=$(grep -E '^REVIEW_PORT=' secrets.env 2>/dev/null | cut -d= -f2 || true)
+PORT=${PORT:-4500}
+
 echo "Installed."
-echo "  Review dashboard: http://localhost:4500  (starts now, restarts at login)"
+echo "  Review dashboard: http://localhost:${PORT}  (starts now, restarts at login)"
 echo "  Daily drafts:     every day at 8:00 AM (both brands)"
 echo "Uninstall with: ./install-launchd.sh uninstall"
