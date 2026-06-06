@@ -1,6 +1,6 @@
 # Session: 2026-06-06 — Social engine: first real posts + scheduling
 
-## Status: IN PROGRESS
+## Status: CLOSED
 
 ## Context / Starting Point
 
