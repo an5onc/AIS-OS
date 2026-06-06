@@ -30,10 +30,12 @@ function card(d) {
   const tags = (d.hashtags || []).join(" ");
   const editable = d.status === "pending";
   const ro = editable ? "" : "readonly";
-  const img = d.imageUrl
-    ? `<img class="preview" src="${esc(d.imageUrl)}" alt="post image preview">
-       <input class="tags" name="imageUrl" value="${esc(d.imageUrl)}" ${ro} placeholder="image URL (optional)">`
-    : `<input class="tags" name="imageUrl" value="" ${ro} placeholder="image URL (optional — leave blank for text-only)">`;
+  const preview = d.imageUrl
+    ? `<img class="preview" src="${esc(d.imageUrl)}" alt="post image preview">`
+    : "";
+  const img = `${preview}
+       <input class="tags" name="imageUrl" value="${esc(d.imageUrl || "")}" ${ro} placeholder="image URL (public https) — optional">
+       <input class="tags" name="imagePath" value="${esc(d.imagePath || "")}" ${ro} placeholder="or local file in images/ (e.g. jobsite.jpg) — wins over URL">`;
   return `
   <div class="card">
     <div class="row">
@@ -124,6 +126,7 @@ const server = http.createServer(async (req, res) => {
       if (body.caption != null) draft.caption = body.caption;
       if (body.hashtags != null) draft.hashtags = body.hashtags.split(/\s+/).filter(Boolean);
       if (body.imageUrl != null) draft.imageUrl = body.imageUrl.trim() || null;
+      if (body.imagePath != null) draft.imagePath = body.imagePath.trim() || null;
     };
 
     if (req.url === "/save") {

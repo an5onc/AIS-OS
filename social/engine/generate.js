@@ -15,7 +15,7 @@ const PLATFORM = "facebook"; // Instagram is a later phase.
 
 // Pick the next content pillar for a brand, rotating in file order and
 // avoiding pillars used in the most recent drafts.
-function pickPillar(brandKey, pillars) {
+export function pickPillar(brandKey, pillars) {
   if (!pillars.length) throw new Error(`No pillars parsed for ${brandKey} (check content-pillars.md).`);
   const recentTitles = brandDrafts(brandKey)
     .slice(0, pillars.length - 1)
@@ -165,6 +165,7 @@ function generateForBrand(brand, stamp, force) {
     caption,
     hashtags,
     imageUrl, // KieferBuilt: a real photo URL; InterlockGo: null (text-only)
+    imagePath: null, // optional local file in images/ — set via the dashboard; wins over imageUrl
     status: "pending", // pending -> approved/posted | rejected
     createdAt: new Date().toISOString(),
     postId: null,

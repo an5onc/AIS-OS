@@ -1,8 +1,11 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import {
   getBrand,
   brandSecrets,
   readDraft,
   writeDraft,
+  resolveImagePath,
   log,
 } from "./lib/util.js";
 
@@ -41,6 +44,21 @@ async function postPhoto(brand, message, imageUrl) {
   return data.post_id || data.id;
 }
 
+// Post a photo from a LOCAL file (multipart upload) with a caption. Returns the post id.
+async function postPhotoFromFile(brand, message, absPath) {
+  const { token, pageId } = brandSecrets(brand);
+  const bytes = await readFile(absPath);
+  const form = new FormData();
+  form.append("source", new Blob([bytes]), path.basename(absPath));
+  if (message) form.append("caption", message);
+  form.append("access_token", token);
+  // fetch sets the multipart/form-data boundary automatically — do not set Content-Type.
+  const res = await fetch(`${GRAPH}/${pageId}/photos`, { method: "POST", body: form });
+  const data = await res.json();
+  if (!res.ok || data.error) throw new Error(`Facebook API error: ${JSON.stringify(data.error || data)}`);
+  return data.post_id || data.id;
+}
+
 // Publish a saved draft by id and mark it posted.
 export async function publishDraft(id) {
   const draft = readDraft(id);
@@ -48,9 +66,22 @@ export async function publishDraft(id) {
   const brand = getBrand(draft.brand);
   const text = fullText(draft);
 
-  const postId = draft.imageUrl
-    ? await postPhoto(brand, text, draft.imageUrl)
-    : await postText(brand, text);
+  let postId;
+  if (draft.imagePath) {
+    // Local file wins over a URL. Resolve against images/ or the engine root.
+    const abs = resolveImagePath(draft.imagePath);
+    if (!abs) {
+      throw new Error(
+        `imagePath "${draft.imagePath}" not found (looked in engine/images/ and the engine root). ` +
+          `Drop the photo in social/engine/images/ and set imagePath to its filename.`
+      );
+    }
+    postId = await postPhotoFromFile(brand, text, abs);
+  } else if (draft.imageUrl) {
+    postId = await postPhoto(brand, text, draft.imageUrl);
+  } else {
+    postId = await postText(brand, text);
+  }
 
   draft.status = "posted";
   draft.postId = postId;

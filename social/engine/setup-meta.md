@@ -43,7 +43,7 @@ Repeat steps 2–4 for the second brand.
 
 ## 5. Test
 1. `node generate.js` to create today's drafts.
-2. `node review.js`, open http://localhost:4500, and click **Approve & Post** on one draft.
+2. `node review.js`, open http://localhost:4600, and click **Approve & Post** on one draft.
 3. Check the brand's Facebook Page — delete the test post afterward if you like.
 
 ## Notes & gotchas

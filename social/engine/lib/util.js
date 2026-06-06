@@ -74,6 +74,25 @@ export function draftsDir() {
   return path.join(ROOT, "drafts");
 }
 
+// Local images you want to attach live in engine/images/. A draft's `imagePath`
+// can be a bare filename (resolved against images/), a path relative to the
+// engine root, or an absolute path. Returns an absolute path or null if missing.
+export function imagesDir() {
+  return path.join(ROOT, "images");
+}
+
+export function resolveImagePath(p) {
+  if (!p) return null;
+  const candidates = [
+    path.isAbsolute(p) ? p : path.join(imagesDir(), p),
+    path.resolve(ROOT, p),
+  ];
+  for (const c of candidates) {
+    if (fs.existsSync(c) && fs.statSync(c).isFile()) return c;
+  }
+  return null;
+}
+
 export function draftId(brandKey, stamp, platform = "facebook") {
   return `${brandKey}-${stamp}-${platform}`;
 }

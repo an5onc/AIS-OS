@@ -103,3 +103,21 @@ Why this matters: a single sentence of *why* now is worth an hour of archaeology
 - Alternatives considered: generalize Anson's existing app in place (rejected — he wanted it folded into AIS-OS); keep the static Markdown skill (rejected — no notify/approve/publish). Instagram now (deferred — needs IG Business accounts + image hosting).
 - Reversibility: easy. Engine is isolated under `social/engine/`; secrets/drafts/logs are gitignored.
 - Follow-up: connect both FB Page tokens (`setup-meta.md`), test-post one draft per brand, run for a week, then scope the Instagram phase.
+
+## 2026-06-06 — Social engine goes live; app-published posts + safety rails
+
+- Decision: Take the `social/engine` Facebook loop live for both brands (real Page tokens, operator-approved test posts), run the dashboard on port 4600, and install the 8 AM launchd schedule (`com.aios.social.daily` + `com.aios.social.review`).
+- Why: Move from "built but never posted" to a verified daily driver. Port 4600 because the legacy `interlockgo-social` app already holds 4500 (`com.interlockgo.*`).
+- Key choices: keep posting via the Graph API (app-published) and accept that those posts do NOT appear in Meta Business Suite / "Manage posts" and can't be boosted there — verified the posts are public/live via `application`/`admin_creator` and the Page's `published_posts`. Manage removal with a new `delete.js` + dashboard "Delete from Facebook" button (operator tested on a real post).
+- Hardening: fixed the "Project showcase" caption leak where author-only pillar hints were narrated into the post. Added `cleanHint()` (strip parenthetical notes), a hardened public-facing prompt, and a `looksLikeLeak()` retry guard that refuses to save a leaked caption (so unattended 8 AM runs can't queue garbage). Verified `claude` authenticates under the real launchd gui agent.
+- Alternatives considered: kill the old app to reuse 4500 (rejected — leave legacy untouched); post manually so Meta "owns" the post for boosting (rejected — kills automation); drop the "Project showcase" pillar (rejected — fix the prompt instead).
+- Reversibility: medium. Engine is isolated; `./install-launchd.sh uninstall` removes the schedule; secrets/drafts/logs gitignored.
+- Follow-up: watch the first unattended 8 AM run; optionally add local-image (`imagePath`) upload support; Instagram still deferred.
+
+## 2026-06-06 — Local-image upload for posts
+
+- Decision: Support attaching a LOCAL image file to a post (draft `imagePath`), in addition to public `imageUrl`. The engine uploads the file to the Page via multipart; a local file wins over a URL.
+- Why: Anson wanted to post phone/jobsite photos (esp. InterlockGo) without first hosting them at a public URL. Facebook's photo-by-URL requires a publicly reachable image; multipart upload does not.
+- Key choices: drop photos in `social/engine/images/` (gitignored), set the filename in the dashboard's local-file field; `resolveImagePath` accepts a bare filename, engine-relative, or absolute path. Verified the multipart transport with a real unpublished upload+delete against the InterlockGo Page (nothing posted to the feed).
+- Alternatives considered: auto-host uploads to Supabase/S3 then post-by-URL (rejected — extra moving parts; multipart is simpler and ToS-fine).
+- Reversibility: easy. Additive code path; existing URL/text posting unchanged.
