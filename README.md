@@ -39,7 +39,7 @@ The system started as a Nate Herk-style AIOS kit with the 3Ms and Four-Cs framew
 
 ## What This Project Is
 
-AIS-OS is a Markdown-first operating system for AI-assisted work.
+AIS-OS is a Markdown-first operating system for AI-assisted work, with small isolated scripts where automation is useful.
 
 It gives agents:
 
@@ -73,7 +73,7 @@ This repo is not:
 - a replacement for Anson reviewing client-facing work
 - a place to store secrets or API keys
 
-Most of the repo is Markdown. The only real code currently added is a small proposal PDF renderer and its tests.
+Most of the repo is Markdown. The code currently present is scoped: Claude hook scripts, a proposal PDF renderer and tests, and a small Node-based Facebook social engine under `social/engine/`.
 
 ## How The Repo Is Organized
 
@@ -147,7 +147,9 @@ This prevents the same decisions from being re-argued every week.
 - `context/brands/interlockgo/`: InterlockGo brand, voice, content pillars, and image strategy.
 - `social/_inbox/`: optional daily notes that override normal content rotation.
 - `social/_templates/daily-posts-template.md`: review template for daily posts.
-- `social/YYYY-MM-DD/posts.md`: generated draft posts for human review and manual scheduling.
+- `social/YYYY-MM-DD/posts.md`: earlier static generated draft posts, kept as historical/reviewable outputs.
+- `social/engine/`: Node ESM generate -> review dashboard -> approve/publish/delete Facebook engine.
+- `social/engine/secrets.env.example`: template for Page token config; the real `secrets.env` is gitignored.
 
 ### Brand Assets
 
@@ -602,19 +604,23 @@ Built brand references:
 - `context/brands/interlockgo/content-pillars.md`
 - `context/brands/interlockgo/image-strategy.md`
 
-What it does:
+What it started as:
 
-- drafts one Facebook post and one Instagram post for KieferBuilt
-- drafts one Facebook post and one Instagram post for InterlockGo
-- keeps the two brands separate
-- uses rotating content pillars
-- checks optional daily inbox notes
-- plans images differently by brand
-- writes posts into `social/YYYY-MM-DD/posts.md`
+- Markdown drafts for Facebook and Instagram captions.
+
+What it is now:
+
+- a Node social engine in `social/engine/`
+- daily Facebook draft generation for KieferBuilt and InterlockGo
+- brand-separated voice, content pillars, and image rules
+- a local review dashboard at `http://localhost:4600`
+- human-approved Facebook publish/delete through Meta Graph API
+- local-image upload support through `social/engine/images/`
+- launchd agents for the dashboard and 8 AM generation
 
 Important rule:
 
-It does not publish anything. The posts are review drafts for manual scheduling in Meta Business Suite.
+Nothing should auto-publish. The engine can publish only after human approval in the dashboard or an explicit publish command.
 
 Why it matters:
 
@@ -640,6 +646,11 @@ Known verification from the session handoff:
 - `/social-posts` mirrored skill files match byte-for-byte
 - today's social post dry run generated with no placeholders
 - brand separation, image rules, sensitivity rules, and no-publish rules checked
+- social engine JS syntax checks passed
+- social engine shell syntax checks passed
+- first real Facebook posts went live for both brands
+- launchd generation and review agents were installed and verified on 2026-06-06
+- local image upload transport was verified against InterlockGo without leaving a feed post
 
 Renderer tests:
 
@@ -680,7 +691,7 @@ Still needed before sending:
 - photos or testimonials
 - domain preference
 
-### No Live Integrations Yet
+### Live Integrations Are Partial
 
 The AIOS knows about tools like Gmail, GitHub, OpenPhone, Vercel, Fly.io, Railway, and Supabase, but most are not wired as MCP integrations yet.
 
@@ -688,6 +699,7 @@ Current status:
 
 - Claude Code: connected
 - Codex: connected
+- Facebook Pages: wired locally for the social engine via `social/engine/secrets.env`
 - OpenPhone: partial through existing InterlockGo production code
 - Gmail: aware only
 - GitHub: aware only
@@ -705,18 +717,24 @@ If a proposal mentions competitor pricing, run `/competitor-refresh` or browse l
 
 `scripts/render_proposal_pdf.py` is not a general document renderer. It is built for NexGen proposal Markdown.
 
-### Social Posts Are Manual Review Drafts
+### Social Posts Are Facebook-Only For Publishing
 
-`/social-posts` creates Markdown drafts only.
+`/social-posts` now drives the Facebook review/publish engine, but it is still human-approved.
+
+It does:
+
+- generate Facebook drafts
+- show a local review dashboard
+- publish to Facebook after approval
+- delete app-published Facebook posts
 
 It does not:
 
-- publish to Facebook
 - publish to Instagram
-- call Meta APIs
-- schedule posts automatically
+- auto-publish without approval
+- make posts manageable inside Meta Business Suite "Manage posts"
 
-Automation can be added later, but only with a review/approval step.
+Instagram support is still a future phase.
 
 ## Future Features Planned
 
@@ -999,15 +1017,17 @@ Why it matters:
 
 This could become a NexGen Studio differentiator, not just an internal tool.
 
-### 16. Scheduled Social Post Drafts
+### 16. Instagram Social Publishing
 
 Goal:
 
-Run `/social-posts` each morning and notify Anson that the day's `social/YYYY-MM-DD/posts.md` file is ready to review.
+Add Instagram support to the social engine.
 
-Important rule:
+Blocked by:
 
-Even if scheduled generation is added, publishing should remain manual until explicit approval rules exist.
+- IG Business account per Page
+- image hosting or upload pipeline suitable for Instagram publishing
+- approval rules matching the Facebook dashboard
 
 ### 17. Clean Template Repo
 
@@ -1063,10 +1083,11 @@ For NexGen proposal work:
 
 For daily social content:
 
-1. Drop optional notes into `social/_inbox/`.
-2. Use `/social-posts` to generate the day's posts.
-3. Review `social/YYYY-MM-DD/posts.md`.
-4. Copy approved posts into Meta Business Suite Planner.
+1. Check or edit brand context under `context/brands/`.
+2. Run `/social-posts` or `cd social/engine && node generate.js`.
+3. Review drafts at `http://localhost:4600`.
+4. Edit, approve/post, reject, or delete from the dashboard.
+5. Drop local photos into `social/engine/images/` and set `imagePath` on a draft when needed.
 
 For software project work:
 

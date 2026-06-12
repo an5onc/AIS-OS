@@ -35,9 +35,11 @@ Skills that help turn leads into signed projects without adding manual proposal 
 
 ## Tier 2.6 — business content skills
 
-Skills that produce review-ready marketing content without publishing anything automatically.
+Skills that produce review-ready marketing content with human approval before anything goes live.
 
-- [x] `/social-posts` — generate daily Facebook and Instagram draft posts for KieferBuilt and InterlockGo, using separate brand context, voice rules, content pillars, and image rules. *(Shipped 2026-06-05.)*
+- [x] `/social-posts` — generate daily Facebook drafts for KieferBuilt and InterlockGo, using separate brand context, voice rules, content pillars, and image rules. *(Shipped 2026-06-05.)*
+- [x] `social/engine` — Node generate -> review dashboard -> approve/publish/delete loop for both Facebook Pages, with launchd scheduling and local-image upload. *(Live 2026-06-06.)*
+- [ ] Instagram support — IG Business account per Page + image-hosting/upload pipeline + dashboard approval flow.
 
 ## Tier 3 — hooks (behavior, not prompts)
 
@@ -71,7 +73,7 @@ Scheduled runs that don't need you in the loop.
 - [ ] Daily Gmail triage (depends on Gmail MCP).
 - [ ] Daily PR babysitter (depends on GitHub MCP).
 - [ ] Daily InterlockGo voicemail sweep (depends on OpenPhone MCP).
-- [ ] Daily `/social-posts` reminder/generation for manual review before Meta Business Suite scheduling.
+- [x] Daily `/social-posts` generation/review dashboard via launchd. *(Installed 2026-06-06; human approval still required before publishing.)*
 
 ## Tier 6 — productization (optional)
 

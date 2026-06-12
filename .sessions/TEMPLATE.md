@@ -41,8 +41,13 @@ remove the Status line when the operator says "let's close today".
 ## How to Run / Verify
 
 <!-- Commands the next agent or operator can run to confirm this session's work. -->
-<!-- For AIS-OS specifically: usually git status, find, YAML frontmatter check, etc. -->
+<!-- For AIS-OS specifically: usually git status, find, skill parity/frontmatter, Python tests, Node syntax checks, shell syntax checks. -->
 - `git status --short`
+- ...
+
+## Verification Run This Session
+
+<!-- What actually ran this session, and whether it passed/failed/was blocked. -->
 - ...
 
 ## Issues / Risks

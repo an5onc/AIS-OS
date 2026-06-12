@@ -15,13 +15,15 @@ AIS-OS is **Anson Cordeiro's personal AI Operating System (AIOS)** — a Markdow
 
 Forked from a Nate Herk-style AIOS kit (3Ms framework, Four-Cs audit, three core ritual skills). Personalized to Anson on 2026-06-01 and extended with code-focused skills for his TS/Next.js work across NexGen Studio and InterlockGo NOCO.
 
-The repo's value is the *patterns*: persona file + intake-derived context + tool registry + append-only decisions log + skills + session handoffs. The skills are Markdown prompts; the hooks are not yet built; integrations are not yet wired. See [EXPANSIONS.md](EXPANSIONS.md) for the planned growth path.
+The repo's value is the *patterns*: persona file + intake-derived context + tool registry + append-only decisions log + skills + session handoffs. Most workflows are Markdown skills, with a few isolated scripts for proposal PDF rendering, hooks, and the Facebook social engine. See [EXPANSIONS.md](EXPANSIONS.md) for the planned growth path.
 
 ## Stack / runtime truth
 
-- **Language:** Markdown. No code to compile, no runtime.
-- **Required tooling:** Claude Code (≥ skills-supporting version) and/or Codex. Optional: `gh` CLI for GitHub ops, standard Unix tools (`find`, `git`).
-- **No** `package.json`, `tsconfig.json`, `Makefile`, `requirements.txt`, or build manifest. If you find one, it was added after this handoff — update this file.
+- **Primary format:** Markdown. The AIOS itself is a local context/skill repo, not a deployed app.
+- **Code present:** Python hook scripts, `scripts/render_proposal_pdf.py`, tests under `tests/`, and a small Node ESM Facebook social engine under [`social/engine/`](social/engine/).
+- **Package manifests:** no root `package.json`, `tsconfig.json`, `Makefile`, `requirements.txt`, or build manifest. There is a scoped `social/engine/package.json` for the social engine only.
+- **Required tooling:** Claude Code (skills + `claude` CLI auth for social generation), Codex, Python 3, Node.js 18+ (uses built-in `fetch`, `FormData`, `Blob`), and standard Unix tools (`find`, `git`, `diff`). Optional: `gh` CLI for GitHub ops.
+- **macOS automation:** [`social/engine/install-launchd.sh`](social/engine/install-launchd.sh) installs local launchd agents for the social dashboard and 8 AM generation.
 - **Skill convention:** Claude Code reads [`.claude/skills/<name>/SKILL.md`](.claude/skills/). Codex reads [`.agents/skills/<name>/SKILL.md`](.agents/skills/). The two trees are mirrored — when you add or edit a skill in one, mirror it in the other.
 - **Persona convention:** Claude Code reads [`CLAUDE.md`](CLAUDE.md) at repo root. Codex reads [`AGENTS.md`](AGENTS.md) at repo root. Historically these mirrored. **This file no longer mirrors CLAUDE.md** — it is now the project handoff, and CLAUDE.md is the persona. If you regenerate the persona via `/onboard`, write to CLAUDE.md only.
 
@@ -45,24 +47,38 @@ Read in this order when joining the project cold:
 | [aios-intake.md](aios-intake.md) | Raw Q1-Q7 intake | When persona/context seems wrong |
 | [EXPANSIONS.md](EXPANSIONS.md) | Planned growth menu (tiered) | When deciding what to build next |
 | [context/brands/](context/brands/) | Brand-specific social/content references | Before drafting daily posts or brand content |
+| [social/engine/README.md](social/engine/README.md) | Facebook social engine runbook | Before touching generation/review/publish automation |
+| [social/engine/setup-meta.md](social/engine/setup-meta.md) | Meta Page token setup | Before changing Facebook credentials or Page access |
 
 Folders without single-file sources:
 
 - [`.claude/skills/`](.claude/skills/) — Claude Code skills. Each is `<name>/SKILL.md` with YAML frontmatter (`name`, `description`).
 - [`.agents/skills/`](.agents/skills/) — Codex mirrors. Must stay in sync with `.claude/skills/`.
 - [`.claude/hooks/`](.claude/hooks/) — project-local hook scripts, wired in [`.claude/settings.json`](.claude/settings.json). See [`.claude/hooks/README.md`](.claude/hooks/README.md).
-- [`social/`](social/) — daily social post drafts, inbox notes, and reusable post templates. Drafts are for manual review and scheduling only.
+- [`social/`](social/) — social post drafts, inbox notes, templates, and the Facebook review/publish engine. Publishing remains human-approved.
 - [`archives/`](archives/) — long-term storage. Move files here instead of deleting.
 
 ## Required environment variables
 
-**None for the repo itself.** Everything is Markdown. No secrets to inject, no `.env` files to populate.
+**None for the root AIOS handoff/skill repo itself.** Most work is local Markdown and does not need env vars.
+
+The social engine is the exception. It reads [`social/engine/secrets.env`](social/engine/secrets.env.example) (gitignored) or process env for:
+
+| Name | Required for | Notes |
+|---|---|---|
+| `FB_PAGE_ACCESS_TOKEN_KIEFER` | Publishing/deleting KieferBuilt Facebook posts | Live secret; never commit. |
+| `FB_PAGE_ID_KIEFER` | Publishing/deleting KieferBuilt Facebook posts | Page ID. |
+| `FB_PAGE_ACCESS_TOKEN_INTERLOCKGO` | Publishing/deleting InterlockGo Facebook posts | Live secret; never commit. |
+| `FB_PAGE_ID_INTERLOCKGO` | Publishing/deleting InterlockGo Facebook posts | Page ID. |
+| `REVIEW_PORT` | Social review dashboard | Defaults to `4500`; current handoff uses `4600` because legacy InterlockGo uses `4500`. |
+
+The social generator also requires the `claude` CLI to be installed and logged in under the user context that runs it. This was verified under launchd in the 2026-06-06 session, but can break if Claude logs out.
 
 When future skills (Phase 4 in [EXPANSIONS.md](EXPANSIONS.md)) wire MCP integrations, document any required env vars in this section and in [connections.md](connections.md) under the relevant entry's `Notes`.
 
 ## Common commands
 
-There is no build, test, or dev server.
+There is no root install/build/dev server. Commands are split between repo verification, proposal rendering, and the social engine.
 
 The operations available are skill invocations and file edits:
 
@@ -80,9 +96,24 @@ The operations available are skill invocations and file edits:
 | `/proposal-finalizer` | Render a proposal Markdown file into a branded NexGen PDF | After proposal-builder draft approval |
 | `/competitor-refresh` | Refresh competitor pricing/services/add-ons with live sources | Before proposals that rely on current market claims |
 | `/proposal-follow-up` | Draft follow-up email/SMS after a proposal has been sent | After a proposal is delivered |
-| `/social-posts` | Draft daily Facebook and Instagram posts for KieferBuilt and InterlockGo | When creating daily posts for manual Meta Business Suite scheduling |
+| `/social-posts` | Generate/review/publish approved Facebook posts for KieferBuilt and InterlockGo via `social/engine` | When creating daily social posts |
 
 These are *skills*, invoked by name. They are NOT shell commands.
+
+### Social engine commands
+
+Run these from `social/engine/`:
+
+| Command | What it does |
+|---|---|
+| `node generate.js` | Generate today's Facebook drafts for all brands. Requires `claude` CLI auth. |
+| `node generate.js YYYY-MM-DD` | Generate drafts for a specific date. |
+| `node generate.js --brand=kiefer-built --force` | Regenerate one brand. |
+| `node review.js` | Start the local review dashboard. Current expected URL: `http://localhost:4600`. |
+| `node publish.js <draftId>` | Publish an approved draft to Facebook via Graph API. Requires Page token env. |
+| `node delete.js <draftId>` | Delete a previously published app-owned post. Requires Page token env. |
+| `./install-launchd.sh` | Install/refresh local launchd dashboard + 8 AM generation agents. |
+| `./install-launchd.sh uninstall` | Remove the launchd agents. |
 
 ### Verification commands an agent CAN run on this repo
 
@@ -92,14 +123,27 @@ These are *skills*, invoked by name. They are NOT shell commands.
 | List every tracked + untracked file | `find . -type f -not -path './.git/*' \| sort` | Use to verify expected files exist |
 | Validate every skill has YAML frontmatter | `for f in .claude/skills/*/SKILL.md .agents/skills/*/SKILL.md; do head -1 "$f" \| grep -q '^---$' \|\| echo "MISSING FRONTMATTER: $f"; done` | Empty output = pass |
 | Check `.claude/` ↔ `.agents/` skill parity | `diff <(ls .claude/skills) <(ls .agents/skills)` | Empty output = pass |
+| Validate all JS syntax | `for f in social/engine/*.js social/engine/lib/*.js; do node --check "$f"; done` | Does not require secrets. |
+| Validate shell scripts parse | `bash -n social/engine/daily.sh social/engine/install-launchd.sh` | Does not install anything. |
+| Run Python tests | `python3 -m unittest discover -s tests -p 'test_*.py' -v` | Requires Python deps used by the PDF renderer (`Pillow`, `reportlab`, `pypdf`) to be installed. |
+| Smoke-test social leak guard | `node --input-type=module -e "import {looksLikeLeak} from './social/engine/generate.js'; if (!looksLikeLeak('content pillar leaked')) process.exit(1); if (looksLikeLeak('Clean customer-facing caption.')) process.exit(1);"` | Does not call Claude or Facebook. |
 
-There is no `npm test`, no `make`, no CI pipeline.
+There is no root `npm test`, no `make`, and no CI pipeline documented in this repo.
 
 ## Deployment notes
 
-**Not deployed.** This is a personal-context repo that lives on the operator's local machine and (optionally) a private GitHub backup. There is no production environment.
+**Not deployed as a web app.** This is a personal-context repo that lives on the operator's local machine and (optionally) a private GitHub backup.
+
+The social engine does have local automation:
+
+- `com.aios.social.review`: launchd agent that keeps the review dashboard running.
+- `com.aios.social.daily`: launchd agent that generates drafts daily at 8 AM.
+- Dashboard port: current handoff expects `4600`.
+- Facebook posts are app-published through Meta Graph API and may not appear in Meta Business Suite "Manage posts"; use the dashboard/`delete.js` for removal.
+- Instagram is not wired yet.
 
 If you ever push this repo to a public remote, audit first: the `decisions/log.md`, `context/`, and `connections.md` may contain personal or business-sensitive info.
+Never commit `social/engine/secrets.env`, draft runtime JSON, logs, or local images.
 
 ## Working rules for future agents
 
@@ -117,6 +161,8 @@ These are the conventions earlier agents have either established or learned the 
 10. **`{{placeholders}}` mean "operator action required."** Don't fabricate values. If `aios-intake.md` has `Pending` markers in answers, surface them in summary; don't invent answers.
 11. **`/dev/CLAUDE.md` is the parent.** This repo lives inside `/Users/ansoncordeiro/dev/`. That directory has its own [CLAUDE.md](../CLAUDE.md) with session save/close protocols ("save session", "let's close today"). When the operator uses those phrases, the parent rules apply.
 12. **Hooks are active in this repo.** [`.claude/settings.json`](.claude/settings.json) wires three project-local hooks (destructive-Bash guard, SKILL.md integrity check, session-continuity injection). If a Bash command is blocked unexpectedly, it likely tripped the text-based `bash_guard.py` — run it manually or see [`.claude/hooks/README.md`](.claude/hooks/README.md). Don't disable hooks to work around a block; fix the command or run it yourself.
+13. **Treat social publishing as high blast radius.** Generating drafts is safe; approving/publishing/deleting Facebook posts requires explicit operator intent and valid Page tokens. Do not publish "just to test" without operator approval.
+14. **Keep secrets and runtime state out of git.** `social/engine/secrets.env`, `drafts/`, `logs/`, and `images/*` are gitignored for a reason.
 
 ## End-of-session handoff protocol
 
@@ -146,4 +192,4 @@ If you are reading this file for the first time:
 
 ---
 
-*This file last updated: 2026-06-05. If today's date is meaningfully later and you see drift between the contents above and the repo state, update this file before continuing.*
+*This file last updated: 2026-06-12. If today's date is meaningfully later and you see drift between the contents above and the repo state, update this file before continuing.*

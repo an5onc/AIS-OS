@@ -121,3 +121,11 @@ Why this matters: a single sentence of *why* now is worth an hour of archaeology
 - Key choices: drop photos in `social/engine/images/` (gitignored), set the filename in the dashboard's local-file field; `resolveImagePath` accepts a bare filename, engine-relative, or absolute path. Verified the multipart transport with a real unpublished upload+delete against the InterlockGo Page (nothing posted to the feed).
 - Alternatives considered: auto-host uploads to Supabase/S3 then post-by-URL (rejected — extra moving parts; multipart is simpler and ToS-fine).
 - Reversibility: easy. Additive code path; existing URL/text posting unchanged.
+
+## 2026-06-12 — Handoff docs reconciled with current runtime
+
+- Decision: Update the root handoff docs to describe AIS-OS as Markdown-first with isolated Python/Node automation, including the live `social/engine` Facebook workflow.
+- Why: The project entry points still claimed Markdown-only/no runtime even though the current source tree includes Python hooks/tests/renderer and a Node social engine with launchd automation.
+- Alternatives considered: Leave the old wording because most files are Markdown (rejected because future agents would miss real commands, env vars, and publishing risks).
+- Reversibility: easy. Documentation-only change.
+- Follow-up: Keep `AGENTS.md` and `README.md` current whenever new executable surfaces are added.
